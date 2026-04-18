@@ -92,8 +92,13 @@ export type CreateOrderInput = Omit<
 >;
 
 export async function createOrder(data: CreateOrderInput): Promise<string> {
+  // Firestore rejects undefined values — drop any keys that are undefined
+  // before writing (mostly optional fields like notes).
+  const cleaned = Object.fromEntries(
+    Object.entries(data).filter(([, value]) => value !== undefined),
+  );
   const ref = await addDoc(ordersCol(), {
-    ...data,
+    ...cleaned,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
   });
