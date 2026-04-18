@@ -1,11 +1,15 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { GalleryCarousel } from "@/components/public/GalleryCarousel";
 import { ProductCard } from "@/components/public/ProductCard";
+import { ReviewsCarousel } from "@/components/public/ReviewsCarousel";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { listGalleryImages } from "@/lib/firebase/gallery";
 import { listProducts } from "@/lib/firebase/products";
+import { listReviews } from "@/lib/firebase/reviews";
 import { getSettings } from "@/lib/firebase/settings";
-import type { Product, Settings } from "@/lib/types";
+import type { GalleryImage, Product, Review, Settings } from "@/lib/types";
 
 // ISR: regenerate at most every 60 seconds so admin edits surface within a
 // minute without waiting for a full rebuild.
@@ -14,24 +18,30 @@ export const revalidate = 60;
 const DEFAULT_HERO = "Recién horneadas, hechas con amor";
 const DEFAULT_TAGLINE = "Fresh from the oven";
 
-async function fetchData(): Promise<{
+interface LandingData {
   products: Product[];
+  reviews: Review[];
+  gallery: GalleryImage[];
   settings: Settings | null;
-}> {
+}
+
+async function fetchData(): Promise<LandingData> {
   try {
-    const [products, settings] = await Promise.all([
+    const [products, reviews, gallery, settings] = await Promise.all([
       listProducts({ activeOnly: true }),
+      listReviews({ activeOnly: true }),
+      listGalleryImages(),
       getSettings(),
     ]);
-    return { products, settings };
+    return { products, reviews, gallery, settings };
   } catch (error) {
-    console.error("[landing] failed to fetch menu data:", error);
-    return { products: [], settings: null };
+    console.error("[landing] failed to fetch data:", error);
+    return { products: [], reviews: [], gallery: [], settings: null };
   }
 }
 
 export default async function HomePage() {
-  const { products, settings } = await fetchData();
+  const { products, reviews, gallery, settings } = await fetchData();
   const heroMessage = settings?.heroMessage?.trim() || DEFAULT_HERO;
   const tagline = settings?.tagline?.trim() || DEFAULT_TAGLINE;
 
@@ -113,6 +123,47 @@ export default async function HomePage() {
           )}
         </div>
       </section>
+
+      {gallery.length > 0 && (
+        <section className="py-16 md:py-24">
+          <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-5 md:px-8">
+            <header className="flex flex-col items-start gap-3 md:flex-row md:items-end md:justify-between">
+              <div className="flex flex-col gap-2">
+                <span className="inline-flex w-fit items-center rounded-full border border-border bg-card/80 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-brown-500 backdrop-blur">
+                  De nuestro horno
+                </span>
+                <h2 className="font-display text-4xl text-brown-900 md:text-5xl">
+                  Cada hornada, un mundo
+                </h2>
+              </div>
+              <Link
+                href="/galeria"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-brown-700 hover:text-brown-900"
+              >
+                Ver toda la galería
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </header>
+            <GalleryCarousel images={gallery} />
+          </div>
+        </section>
+      )}
+
+      {reviews.length > 0 && (
+        <section className="bg-secondary/40 py-16 md:py-24">
+          <div className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-5 md:px-8">
+            <header className="flex flex-col items-center gap-3 text-center">
+              <span className="inline-flex items-center rounded-full border border-border bg-card/80 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-brown-500 backdrop-blur">
+                Lo que dicen
+              </span>
+              <h2 className="font-display text-4xl text-brown-900 md:text-5xl">
+                Gente que ya se obsesionó
+              </h2>
+            </header>
+            <ReviewsCarousel reviews={reviews} />
+          </div>
+        </section>
+      )}
     </>
   );
 }
