@@ -119,15 +119,6 @@ export default async function HomePage() {
         id="menu"
         className="relative scroll-mt-20 overflow-hidden bg-secondary/40 py-16 md:py-24"
       >
-        <Image
-          src="/arrow-focaccia.png"
-          alt=""
-          width={900}
-          height={1600}
-          aria-hidden="true"
-          className="pointer-events-none absolute -left-12 top-24 hidden w-48 select-none opacity-95 lg:block xl:-left-4 xl:top-32 xl:w-64"
-        />
-
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-5 md:px-8">
           <header className="flex flex-col items-center gap-3 text-center">
             <span className="inline-flex items-center rounded-full border border-border bg-card/80 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-brown-500 backdrop-blur">
