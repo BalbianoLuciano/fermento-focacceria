@@ -5,20 +5,20 @@ import {
   signOut,
   type User,
 } from "firebase/auth";
-import { auth } from "@/lib/firebase/client";
+import { getFirebaseAuth } from "@/lib/firebase/client";
 
 export const googleProvider = new GoogleAuthProvider();
 
 export function signInWithGoogle() {
-  return signInWithPopup(auth, googleProvider);
+  return signInWithPopup(getFirebaseAuth(), googleProvider);
 }
 
 export function signOutUser() {
-  return signOut(auth);
+  return signOut(getFirebaseAuth());
 }
 
 export function onAuthChange(callback: (user: User | null) => void) {
-  return onAuthStateChanged(auth, callback);
+  return onAuthStateChanged(getFirebaseAuth(), callback);
 }
 
 export function isAdmin(user: User | null): boolean {

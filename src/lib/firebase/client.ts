@@ -14,15 +14,28 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-export const app: FirebaseApp =
-  getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+// Lazy accessors. Firebase services validate credentials when instantiated,
+// so we delay initialization until they're actually used (effects, handlers).
+// This keeps static prerendering safe when env vars aren't yet wired up.
 
-export const auth: Auth = getAuth(app);
-export const db: Firestore = getFirestore(app);
-export const storage: FirebaseStorage = getStorage(app);
+export function getFirebaseApp(): FirebaseApp {
+  return getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+}
+
+export function getFirebaseAuth(): Auth {
+  return getAuth(getFirebaseApp());
+}
+
+export function getFirebaseDb(): Firestore {
+  return getFirestore(getFirebaseApp());
+}
+
+export function getFirebaseStorage(): FirebaseStorage {
+  return getStorage(getFirebaseApp());
+}
 
 export async function getAnalyticsClient(): Promise<Analytics | null> {
   if (typeof window === "undefined") return null;
   if (!(await isSupported())) return null;
-  return getAnalytics(app);
+  return getAnalytics(getFirebaseApp());
 }
