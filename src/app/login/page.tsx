@@ -1,5 +1,8 @@
 import { LoginCard } from "@/components/admin/LoginCard";
 
+// Auth state is resolved on the client only — no static prerender benefit.
+export const dynamic = "force-dynamic";
+
 export const metadata = {
   title: "Ingresar",
   description: "Ingreso al panel de administración",
