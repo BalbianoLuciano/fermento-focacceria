@@ -149,6 +149,7 @@ const PRODUCTS: ProductSeed[] = [
       { name: "XL", price: 10000, recipe: [] }, // pendiente de confirmación
     ],
     order: 1,
+    defaultImageUrl: "/naked-card.jpg",
   },
   {
     id: "product-mediterranea",
