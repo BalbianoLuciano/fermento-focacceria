@@ -1,13 +1,16 @@
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
   getDocs,
+  onSnapshot,
   orderBy,
   query,
   serverTimestamp,
   setDoc,
   updateDoc,
+  type Unsubscribe,
 } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
 import type { GalleryImage } from "@/lib/types";
@@ -49,4 +52,21 @@ export async function updateGalleryImage(
 
 export async function deleteGalleryImage(id: string) {
   await deleteDoc(galleryDoc(id));
+}
+
+export async function addGalleryImage(data: GalleryInput): Promise<string> {
+  const ref = await addDoc(galleryCol(), {
+    ...data,
+    createdAt: serverTimestamp(),
+  });
+  return ref.id;
+}
+
+export function subscribeGalleryImages(
+  callback: (images: GalleryImage[]) => void,
+): Unsubscribe {
+  return onSnapshot(
+    query(galleryCol(), orderBy("order", "asc")),
+    (snap) => callback(snap.docs.map((d) => mapImage(d.id, d.data()))),
+  );
 }

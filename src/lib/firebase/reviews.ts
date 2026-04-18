@@ -1,8 +1,10 @@
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
   getDocs,
+  onSnapshot,
   orderBy,
   query,
   serverTimestamp,
@@ -10,6 +12,7 @@ import {
   updateDoc,
   where,
   type QueryConstraint,
+  type Unsubscribe,
 } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
 import type { Review } from "@/lib/types";
@@ -50,4 +53,23 @@ export async function updateReview(id: string, data: Partial<ReviewInput>) {
 
 export async function deleteReview(id: string) {
   await deleteDoc(reviewDoc(id));
+}
+
+export async function addReview(data: ReviewInput): Promise<string> {
+  const ref = await addDoc(reviewsCol(), {
+    ...data,
+    createdAt: serverTimestamp(),
+  });
+  return ref.id;
+}
+
+export function subscribeReviews(
+  callback: (reviews: Review[]) => void,
+  options: { activeOnly?: boolean } = {},
+): Unsubscribe {
+  const constraints: QueryConstraint[] = [orderBy("order", "asc")];
+  if (options.activeOnly) constraints.unshift(where("active", "==", true));
+  return onSnapshot(query(reviewsCol(), ...constraints), (snap) =>
+    callback(snap.docs.map((d) => mapReview(d.id, d.data()))),
+  );
 }
