@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   BarChart3,
   Image as ImageIcon,
@@ -13,6 +14,7 @@ import {
   Star,
 } from "lucide-react";
 import { Logo } from "@/components/shared/Logo";
+import { subscribeOrders } from "@/lib/firebase/orders";
 import { cn } from "@/lib/utils";
 
 interface NavItem {
@@ -39,6 +41,14 @@ export function AdminNav({
   onNavigate?: () => void;
 }) {
   const pathname = usePathname();
+  const [pendingCount, setPendingCount] = useState(0);
+
+  useEffect(() => {
+    const unsubscribe = subscribeOrders({ status: "pending" }, (orders) =>
+      setPendingCount(orders.length),
+    );
+    return () => unsubscribe();
+  }, []);
 
   return (
     <nav className="flex h-full flex-col gap-2 px-4 py-6">
@@ -49,6 +59,8 @@ export function AdminNav({
       <ul className="flex flex-col gap-1">
         {ITEMS.map(({ label, href, icon: Icon }) => {
           const active = pathname === href || pathname?.startsWith(`${href}/`);
+          const badge =
+            href === "/admin/pedidos" && pendingCount > 0 ? pendingCount : null;
           return (
             <li key={href}>
               <Link
@@ -62,7 +74,20 @@ export function AdminNav({
                 )}
               >
                 <Icon className="h-4 w-4" />
-                {label}
+                <span className="flex-1">{label}</span>
+                {badge !== null && (
+                  <span
+                    className={cn(
+                      "inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[11px] font-medium",
+                      active
+                        ? "bg-background text-brown-900"
+                        : "bg-gold text-brown-900",
+                    )}
+                    aria-label={`${badge} pedidos pendientes`}
+                  >
+                    {badge}
+                  </span>
+                )}
               </Link>
             </li>
           );
