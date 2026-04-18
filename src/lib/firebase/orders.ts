@@ -38,19 +38,33 @@ export interface OrderFilters {
   to?: Date;
 }
 
-function buildConstraints(filters: OrderFilters = {}): QueryConstraint[] {
-  const c: QueryConstraint[] = [];
-  if (filters.status) c.push(where("status", "==", filters.status));
-  if (typeof filters.paid === "boolean") c.push(where("paid", "==", filters.paid));
-  if (filters.from) c.push(where("createdAt", ">=", filters.from));
-  if (filters.to) c.push(where("createdAt", "<=", filters.to));
-  c.push(orderBy("createdAt", "desc"));
-  return c;
+function toDate(ts: unknown): Date | null {
+  if (!ts) return null;
+  const maybe = ts as { toDate?: () => Date };
+  if (typeof maybe.toDate === "function") return maybe.toDate();
+  return null;
+}
+
+function applyFilters(orders: Order[], filters: OrderFilters): Order[] {
+  return orders.filter((order) => {
+    if (filters.status && order.status !== filters.status) return false;
+    if (typeof filters.paid === "boolean" && order.paid !== filters.paid) return false;
+    if (filters.from || filters.to) {
+      const created = toDate(order.createdAt);
+      if (!created) return false;
+      if (filters.from && created < filters.from) return false;
+      if (filters.to && created > filters.to) return false;
+    }
+    return true;
+  });
 }
 
 export async function listOrders(filters: OrderFilters = {}): Promise<Order[]> {
-  const snap = await getDocs(query(ordersCol(), ...buildConstraints(filters)));
-  return snap.docs.map((d) => mapOrder(d.id, d.data()));
+  // Server-side sort, client-side filter. Skips the composite index that
+  // status/paid/createdAt range queries would need.
+  const snap = await getDocs(query(ordersCol(), orderBy("createdAt", "desc")));
+  const all = snap.docs.map((d) => mapOrder(d.id, d.data()));
+  return applyFilters(all, filters);
 }
 
 export async function getOrder(id: string): Promise<Order | null> {
@@ -64,8 +78,11 @@ export function subscribeOrders(
   callback: (orders: Order[]) => void,
 ): Unsubscribe {
   return onSnapshot(
-    query(ordersCol(), ...buildConstraints(filters)),
-    (snap) => callback(snap.docs.map((d) => mapOrder(d.id, d.data()))),
+    query(ordersCol(), orderBy("createdAt", "desc")),
+    (snap) => {
+      const all = snap.docs.map((d) => mapOrder(d.id, d.data()));
+      callback(applyFilters(all, filters));
+    },
   );
 }
 

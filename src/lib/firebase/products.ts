@@ -33,10 +33,11 @@ function mapProduct(id: string, data: Record<string, unknown>): Product {
 }
 
 export async function listProducts(options: { activeOnly?: boolean } = {}) {
-  const constraints: QueryConstraint[] = [orderBy("order", "asc")];
-  if (options.activeOnly) constraints.unshift(where("active", "==", true));
-  const snap = await getDocs(query(productsCol(), ...constraints));
-  return snap.docs.map((d) => mapProduct(d.id, d.data()));
+  // Sort server-side, filter client-side. Avoids the composite index that
+  // \`where(active) + orderBy(order)\` would require; the catalog is tiny.
+  const snap = await getDocs(query(productsCol(), orderBy("order", "asc")));
+  const all = snap.docs.map((d) => mapProduct(d.id, d.data()));
+  return options.activeOnly ? all.filter((p) => p.active) : all;
 }
 
 export async function getProduct(id: string): Promise<Product | null> {
@@ -95,9 +96,8 @@ export function subscribeProducts(
   callback: (products: Product[]) => void,
   options: { activeOnly?: boolean } = {},
 ): Unsubscribe {
-  const constraints: QueryConstraint[] = [orderBy("order", "asc")];
-  if (options.activeOnly) constraints.unshift(where("active", "==", true));
-  return onSnapshot(query(productsCol(), ...constraints), (snap) =>
-    callback(snap.docs.map((d) => mapProduct(d.id, d.data()))),
-  );
+  return onSnapshot(query(productsCol(), orderBy("order", "asc")), (snap) => {
+    const all = snap.docs.map((d) => mapProduct(d.id, d.data()));
+    callback(options.activeOnly ? all.filter((p) => p.active) : all);
+  });
 }

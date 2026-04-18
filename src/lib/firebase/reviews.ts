@@ -32,10 +32,9 @@ function mapReview(id: string, data: Record<string, unknown>): Review {
 }
 
 export async function listReviews(options: { activeOnly?: boolean } = {}) {
-  const constraints: QueryConstraint[] = [orderBy("order", "asc")];
-  if (options.activeOnly) constraints.unshift(where("active", "==", true));
-  const snap = await getDocs(query(reviewsCol(), ...constraints));
-  return snap.docs.map((d) => mapReview(d.id, d.data()));
+  const snap = await getDocs(query(reviewsCol(), orderBy("order", "asc")));
+  const all = snap.docs.map((d) => mapReview(d.id, d.data()));
+  return options.activeOnly ? all.filter((r) => r.active) : all;
 }
 
 type ReviewInput = Omit<Review, "id" | "createdAt">;
@@ -67,9 +66,8 @@ export function subscribeReviews(
   callback: (reviews: Review[]) => void,
   options: { activeOnly?: boolean } = {},
 ): Unsubscribe {
-  const constraints: QueryConstraint[] = [orderBy("order", "asc")];
-  if (options.activeOnly) constraints.unshift(where("active", "==", true));
-  return onSnapshot(query(reviewsCol(), ...constraints), (snap) =>
-    callback(snap.docs.map((d) => mapReview(d.id, d.data()))),
-  );
+  return onSnapshot(query(reviewsCol(), orderBy("order", "asc")), (snap) => {
+    const all = snap.docs.map((d) => mapReview(d.id, d.data()));
+    callback(options.activeOnly ? all.filter((r) => r.active) : all);
+  });
 }
