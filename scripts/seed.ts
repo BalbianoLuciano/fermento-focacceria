@@ -50,7 +50,7 @@ const PRODUCTS: ProductSeed[] = [
   {
     id: "product-garlic-lover",
     name: "Garlic Lover",
-    description: "Ajo infusionado en aceite de oliva y queso. Perdoná el aliento, vale la pena.",
+    description: "Mix de quesos duros y ajo infusionado en aceite de oliva. Intensa, tostada, obsesiva.",
     sizes: [
       { name: "Individual", price: 6000 },
       { name: "XL", price: 10000 },
@@ -139,7 +139,7 @@ async function seedSettings() {
 
   const payload = {
     whatsappNumber,
-    instagramHandle: "anna.kowalczuk",
+    instagramHandle: "fermentofocacceria_",
     businessName: "Fermento Focacceria",
     tagline: "Fresh from the oven",
     heroMessage: "Recién horneadas, hechas con amor",

@@ -1,7 +1,7 @@
 import { MessageCircle } from "lucide-react";
 import { Logo } from "@/components/shared/Logo";
 
-const INSTAGRAM_HANDLE = "anna.kowalczuk";
+const INSTAGRAM_HANDLE = "fermentofocacceria_";
 
 function InstagramIcon({ className }: { className?: string }) {
   return (
