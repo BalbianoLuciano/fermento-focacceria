@@ -1,4 +1,6 @@
-import "server-only";
+// Admin SDK: server-only by construction. Uses node:fs and firebase-admin,
+// neither of which can be bundled into a client-side module, so importing
+// this file from a client component will fail at build time.
 
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";

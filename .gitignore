@@ -49,6 +49,8 @@ next-env.d.ts
 firebase-debug.log*
 .firebase-service-account.json
 .firebase-service-account*.json
+*-firebase-adminsdk-*.json
+firebase-adminsdk-*.json
 
 # raw photo/source assets (imported from the client, not to be committed)
 *.heic
