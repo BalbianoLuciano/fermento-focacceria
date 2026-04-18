@@ -61,61 +61,57 @@ export default async function HomePage() {
   return (
     <>
       <section className="relative overflow-hidden">
-        <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[70vh] bg-[radial-gradient(ellipse_at_center_top,var(--secondary)_0%,transparent_70%)]" />
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/hero-banner.jpg"
+            alt="Alveolos de focaccia recién horneada — masa madre con 24 horas de fermento"
+            fill
+            sizes="100vw"
+            priority
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/85 via-background/65 to-secondary/70" />
+        </div>
 
-        <div className="mx-auto grid w-full max-w-7xl gap-8 px-5 py-10 md:grid-cols-2 md:items-center md:gap-12 md:px-8 md:py-16">
-          <div className="order-2 flex flex-col items-center text-center md:order-1 md:items-start md:text-left">
-            <span className="mb-6 inline-flex items-center rounded-full border border-border bg-card/80 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-brown-500 backdrop-blur">
-              Masa madre · Fermentación 24 h
-            </span>
+        <div className="mx-auto flex min-h-[calc(100svh-4rem)] w-full max-w-4xl flex-col items-center justify-center gap-6 px-5 py-20 text-center md:px-8 md:py-28">
+          <span className="inline-flex items-center rounded-full border border-border bg-card/90 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-brown-500 backdrop-blur">
+            Masa madre · Fermentación 24 h
+          </span>
 
-            <h1 className="font-display text-5xl leading-[1.05] text-brown-900 md:text-6xl lg:text-7xl xl:text-8xl">
-              {heroMessage}
-            </h1>
+          <h1 className="font-display text-5xl leading-[1.02] text-brown-900 drop-shadow-[0_1px_0_rgba(255,255,255,0.4)] md:text-7xl lg:text-8xl xl:text-9xl">
+            {heroMessage}
+          </h1>
 
-            <p className="mt-6 max-w-xl text-base text-brown-500 md:text-lg">
-              Focaccias artesanales a pedido, en Corrientes. Pocas variedades,
-              muchas horas de fermento, una sola persona detrás del horno.
-            </p>
+          <p className="max-w-xl text-base text-brown-700 md:text-lg">
+            Focaccias artesanales a pedido, en Corrientes. Pocas variedades,
+            muchas horas de fermento, una sola persona detrás del horno.
+          </p>
 
-            <div className="mt-10 flex flex-col items-stretch gap-3 sm:flex-row md:items-start">
-              <Link
-                href="#menu"
-                className={cn(
-                  buttonVariants({ variant: "default" }),
-                  "h-12 rounded-full px-8 text-base gap-2",
-                )}
-              >
-                Ver el menú
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link
-                href="/pedido"
-                className={cn(
-                  buttonVariants({ variant: "outline" }),
-                  "h-12 rounded-full border-brown-300 px-8 text-base text-brown-700 hover:bg-muted",
-                )}
-              >
-                Armar pedido
-              </Link>
-            </div>
-
-            <p className="mt-12 max-w-md font-body text-sm italic text-brown-500/80">
-              {tagline}
-            </p>
+          <div className="mt-4 flex flex-col items-stretch gap-3 sm:flex-row">
+            <Link
+              href="#menu"
+              className={cn(
+                buttonVariants({ variant: "default" }),
+                "h-12 rounded-full px-8 text-base gap-2",
+              )}
+            >
+              Ver el menú
+              <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link
+              href="/pedido"
+              className={cn(
+                buttonVariants({ variant: "outline" }),
+                "h-12 rounded-full border-brown-300 bg-card/70 px-8 text-base text-brown-700 backdrop-blur hover:bg-muted",
+              )}
+            >
+              Armar pedido
+            </Link>
           </div>
 
-          <div className="relative order-1 aspect-[4/5] overflow-hidden rounded-3xl md:order-2 md:aspect-auto md:h-[85vh]">
-            <Image
-              src="/hero-banner.jpg"
-              alt="Alveolos de focaccia recién horneada — masa madre con 24 horas de fermento"
-              fill
-              sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-cover"
-              priority
-            />
-            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-brown-900/25 to-transparent" />
-          </div>
+          <p className="mt-8 max-w-md font-body text-sm italic text-brown-500">
+            {tagline}
+          </p>
         </div>
       </section>
 
@@ -126,13 +122,13 @@ export default async function HomePage() {
         <Image
           src="/arrow-right-focaccia.png"
           alt=""
-          width={320}
-          height={320}
+          width={400}
+          height={400}
           aria-hidden="true"
-          className="pointer-events-none absolute -left-16 top-28 hidden w-64 -rotate-[14deg] select-none opacity-90 lg:block xl:-left-10 xl:w-72"
+          className="pointer-events-none absolute -right-12 top-32 hidden w-64 rotate-[8deg] select-none opacity-90 lg:block xl:-right-6 xl:top-40 xl:w-80"
         />
 
-        <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-10 px-5 md:px-8">
+        <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-5 md:px-8">
           <header className="flex flex-col items-center gap-3 text-center">
             <span className="inline-flex items-center rounded-full border border-border bg-card/80 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-brown-500 backdrop-blur">
               Nuestros sabores
@@ -156,7 +152,7 @@ export default async function HomePage() {
               </p>
             </div>
           ) : (
-            <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
+            <div className="flex flex-col gap-4">
               {products.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
@@ -165,25 +161,25 @@ export default async function HomePage() {
 
           <Link
             href="/pedido"
-            className="group relative mt-2 flex w-full max-w-4xl overflow-hidden rounded-3xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md"
+            className="group relative grid grid-cols-[130px_1fr] items-stretch overflow-hidden rounded-3xl border border-border bg-card shadow-sm transition-shadow hover:shadow-md sm:grid-cols-[220px_1fr] md:grid-cols-[320px_1fr]"
           >
-            <div className="relative aspect-[4/3] w-2/5 min-w-[140px] overflow-hidden bg-secondary md:w-1/2">
+            <div className="relative h-full overflow-hidden bg-secondary">
               <Image
                 src="/xl-card.jpg"
                 alt="Focaccia XL para compartir"
                 fill
-                sizes="(max-width: 768px) 40vw, 50vw"
+                sizes="(max-width: 640px) 130px, (max-width: 768px) 220px, 320px"
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
             </div>
-            <div className="flex flex-1 flex-col justify-center gap-2 p-5 md:p-8">
+            <div className="flex flex-col justify-center gap-2 p-4 md:p-8">
               <span className="inline-flex w-fit items-center rounded-full border border-border bg-background px-3 py-1 text-[10px] font-medium uppercase tracking-wider text-brown-500">
                 También XL
               </span>
               <h3 className="font-display text-2xl leading-tight text-brown-900 md:text-3xl">
                 Para compartir
               </h3>
-              <p className="text-sm text-brown-500">
+              <p className="text-xs text-brown-500 md:text-sm">
                 Una sola focaccia, masa generosa, todos alrededor de la mesa.
                 Pedila por WhatsApp y coordinamos.
               </p>
