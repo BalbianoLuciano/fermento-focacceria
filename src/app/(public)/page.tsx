@@ -25,6 +25,13 @@ interface LandingData {
   settings: Settings | null;
 }
 
+function toPlain<T>(value: T): T {
+  // Firestore Timestamps carry a toJSON method that React 19 refuses to pass
+  // from a Server Component to a Client Component. JSON round-trip strips the
+  // prototype so what lands on the client is a plain object.
+  return JSON.parse(JSON.stringify(value)) as T;
+}
+
 async function fetchData(): Promise<LandingData> {
   try {
     const [products, reviews, gallery, settings] = await Promise.all([
@@ -33,7 +40,12 @@ async function fetchData(): Promise<LandingData> {
       listGalleryImages(),
       getSettings(),
     ]);
-    return { products, reviews, gallery, settings };
+    return {
+      products: toPlain(products),
+      reviews: toPlain(reviews),
+      gallery: toPlain(gallery),
+      settings: settings ? toPlain(settings) : null,
+    };
   } catch (error) {
     console.error("[landing] failed to fetch data:", error);
     return { products: [], reviews: [], gallery: [], settings: null };

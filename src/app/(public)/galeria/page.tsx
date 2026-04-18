@@ -16,7 +16,9 @@ export const metadata = {
 
 async function fetchImages(): Promise<GalleryImage[]> {
   try {
-    return await listGalleryImages();
+    const images = await listGalleryImages();
+    // Strip Firestore Timestamp prototypes so the client component accepts them.
+    return JSON.parse(JSON.stringify(images)) as GalleryImage[];
   } catch (error) {
     console.error("[galeria] failed to fetch gallery:", error);
     return [];
