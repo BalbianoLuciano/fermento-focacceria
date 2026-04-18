@@ -6,7 +6,12 @@ export const revalidate = 60;
 
 export const metadata = {
   title: "Galería",
-  description: "Fotos del horno y de las focaccias recién horneadas.",
+  description:
+    "Fotos reales del horno y de las focaccias recién horneadas de Fermento Focacceria.",
+  openGraph: {
+    title: "Galería · Fermento Focacceria",
+    description: "Fotos reales del horno y de las focaccias recién horneadas.",
+  },
 };
 
 async function fetchImages(): Promise<GalleryImage[]> {

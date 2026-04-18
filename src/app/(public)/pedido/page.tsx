@@ -4,6 +4,12 @@ export const metadata = {
   title: "Armar pedido",
   description:
     "Sumá focaccias al pedido, completá tus datos y coordinamos por WhatsApp.",
+  openGraph: {
+    title: "Armar pedido · Fermento Focacceria",
+    description:
+      "Armá tu pedido y confirmamos por WhatsApp. Focaccias artesanales a pedido.",
+  },
+  robots: { index: false, follow: false },
 };
 
 export default function PedidoPage() {

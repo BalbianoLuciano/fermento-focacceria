@@ -19,18 +19,54 @@ const outfit = Outfit({
   display: "swap",
 });
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://fermento-focacceria.vercel.app";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: "Fermento Focacceria — Recién horneadas, hechas con amor",
     template: "%s · Fermento Focacceria",
   },
   description:
     "Focaccias artesanales con masa madre, fermentación de 24 horas. Pedilas por WhatsApp en Corrientes.",
+  applicationName: "Fermento Focacceria",
+  keywords: [
+    "focaccia",
+    "focaccia artesanal",
+    "masa madre",
+    "Corrientes",
+    "delivery",
+    "pan artesanal",
+  ],
+  authors: [{ name: "Fermento Focacceria" }],
+  creator: "Fermento Focacceria",
   openGraph: {
+    type: "website",
+    locale: "es_AR",
+    url: siteUrl,
+    siteName: "Fermento Focacceria",
+    title: "Fermento Focacceria — Recién horneadas, hechas con amor",
+    description:
+      "Focaccias artesanales con masa madre. Recién horneadas, hechas con amor.",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Fermento Focacceria — focaccia artesanal recién horneada",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
     title: "Fermento Focacceria",
     description:
       "Focaccias artesanales con masa madre. Recién horneadas, hechas con amor.",
-    type: "website",
+    images: ["/og-image.jpg"],
+  },
+  icons: {
+    icon: "/favicon.ico",
   },
 };
 
