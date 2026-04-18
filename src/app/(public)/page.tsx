@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { GalleryCarousel } from "@/components/public/GalleryCarousel";
@@ -59,47 +60,63 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="relative flex min-h-[calc(100svh-4rem)] flex-col items-center justify-center overflow-hidden px-5 pb-20 pt-16 text-center md:px-8">
+      <section className="relative overflow-hidden">
         <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[70vh] bg-[radial-gradient(ellipse_at_center_top,var(--secondary)_0%,transparent_70%)]" />
 
-        <span className="mb-6 inline-flex items-center rounded-full border border-border bg-card/80 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-brown-500 backdrop-blur">
-          Masa madre · Fermentación 24 h
-        </span>
+        <div className="mx-auto grid w-full max-w-7xl gap-8 px-5 py-10 md:grid-cols-2 md:items-center md:gap-12 md:px-8 md:py-16">
+          <div className="order-2 flex flex-col items-center text-center md:order-1 md:items-start md:text-left">
+            <span className="mb-6 inline-flex items-center rounded-full border border-border bg-card/80 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-brown-500 backdrop-blur">
+              Masa madre · Fermentación 24 h
+            </span>
 
-        <h1 className="font-display text-5xl leading-[1.05] text-brown-900 md:text-7xl lg:text-8xl">
-          {heroMessage}
-        </h1>
+            <h1 className="font-display text-5xl leading-[1.05] text-brown-900 md:text-6xl lg:text-7xl xl:text-8xl">
+              {heroMessage}
+            </h1>
 
-        <p className="mt-6 max-w-xl text-base text-brown-500 md:text-lg">
-          Focaccias artesanales a pedido, en Corrientes. Pocas variedades,
-          muchas horas de fermento, una sola persona detrás del horno.
-        </p>
+            <p className="mt-6 max-w-xl text-base text-brown-500 md:text-lg">
+              Focaccias artesanales a pedido, en Corrientes. Pocas variedades,
+              muchas horas de fermento, una sola persona detrás del horno.
+            </p>
 
-        <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row">
-          <Link
-            href="#menu"
-            className={cn(
-              buttonVariants({ variant: "default" }),
-              "h-12 rounded-full px-8 text-base gap-2",
-            )}
-          >
-            Ver el menú
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-          <Link
-            href="/pedido"
-            className={cn(
-              buttonVariants({ variant: "outline" }),
-              "h-12 rounded-full border-brown-300 px-8 text-base text-brown-700 hover:bg-muted",
-            )}
-          >
-            Armar pedido
-          </Link>
+            <div className="mt-10 flex flex-col items-stretch gap-3 sm:flex-row md:items-start">
+              <Link
+                href="#menu"
+                className={cn(
+                  buttonVariants({ variant: "default" }),
+                  "h-12 rounded-full px-8 text-base gap-2",
+                )}
+              >
+                Ver el menú
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/pedido"
+                className={cn(
+                  buttonVariants({ variant: "outline" }),
+                  "h-12 rounded-full border-brown-300 px-8 text-base text-brown-700 hover:bg-muted",
+                )}
+              >
+                Armar pedido
+              </Link>
+            </div>
+
+            <p className="mt-12 max-w-md font-body text-sm italic text-brown-500/80">
+              {tagline}
+            </p>
+          </div>
+
+          <div className="relative order-1 aspect-[4/5] overflow-hidden rounded-3xl md:order-2 md:aspect-auto md:h-[85vh]">
+            <Image
+              src="/hero-banner.jpg"
+              alt="Alveolos de focaccia recién horneada — masa madre con 24 horas de fermento"
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover"
+              priority
+            />
+            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-brown-900/25 to-transparent" />
+          </div>
         </div>
-
-        <p className="mt-14 max-w-md font-body text-sm italic text-brown-500/80">
-          {tagline}
-        </p>
       </section>
 
       <section id="menu" className="scroll-mt-20 bg-secondary/40 py-16 md:py-24">
