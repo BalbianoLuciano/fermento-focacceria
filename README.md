@@ -28,6 +28,24 @@ Ver [`.env.example`](./.env.example). Las `NEXT_PUBLIC_FIREBASE_*` vienen del pa
 
 En Vercel agregar las mismas variables en Settings → Environment Variables (Production + Preview).
 
+## Seed inicial de Firestore
+
+Carga los 4 productos, `settings/global` y reseñas de ejemplo. El script usa el
+Admin SDK, así que bypasea las reglas (corrido sólo desde una máquina
+confiable).
+
+1. Firebase Console → **Project Settings → Service accounts → Generate new
+   private key**.
+2. Guardalo en la raíz del repo como `.firebase-service-account.json` (ya
+   está en `.gitignore`).
+3. Corré el seed:
+
+```bash
+npx tsx scripts/seed.ts
+```
+
+El script es idempotente: re-ejecutarlo actualiza lo que cambió sin duplicar.
+
 ## Deploy de reglas de Firebase
 
 ```bash
