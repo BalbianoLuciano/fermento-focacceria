@@ -11,6 +11,7 @@ import {
   MessageSquare,
   Package,
   Settings,
+  Sprout,
   Star,
 } from "lucide-react";
 import { Logo } from "@/components/shared/Logo";
@@ -27,6 +28,7 @@ const ITEMS: NavItem[] = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { label: "Pedidos", href: "/admin/pedidos", icon: MessageSquare },
   { label: "Productos", href: "/admin/productos", icon: Package },
+  { label: "Ingredientes", href: "/admin/ingredientes", icon: Sprout },
   { label: "Galería", href: "/admin/galeria", icon: ImageIcon },
   { label: "Reseñas", href: "/admin/resenas", icon: Star },
   { label: "Analíticas", href: "/admin/analiticas", icon: BarChart3 },
