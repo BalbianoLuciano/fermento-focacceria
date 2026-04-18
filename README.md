@@ -35,7 +35,7 @@ npx firebase-tools login
 npx firebase-tools deploy --only firestore:rules,storage --project fermento-focacceria
 ```
 
-> Importante: Firebase no soporta env vars dentro de las reglas. El email de Anna está hardcodeado en `firestore.rules` y `storage.rules` como `EMAIL_DE_ANNA@gmail.com` — reemplazar por el real antes del primer deploy.
+> Firebase no soporta env vars dentro de las reglas. El email de Anna (`kowalczukannaiel@gmail.com`) está hardcodeado en `firestore.rules` y `storage.rules`, espejado por `NEXT_PUBLIC_ADMIN_EMAIL` en el cliente.
 
 ## Agentes
 

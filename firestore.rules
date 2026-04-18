@@ -1,11 +1,12 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Only Anna can write. Replace the email with the real admin email before deploying.
-    // Firebase rules do not support env vars — this must be hardcoded.
+    // Only Anna can write. Firebase rules do not support env vars — the
+    // admin email must be hardcoded. Mirror it with NEXT_PUBLIC_ADMIN_EMAIL
+    // on the client.
     function isAdmin() {
       return request.auth != null
-        && request.auth.token.email == 'EMAIL_DE_ANNA@gmail.com';
+        && request.auth.token.email == 'kowalczukannaiel@gmail.com';
     }
 
     // Public read for products, reviews, gallery and settings. Writes are admin-only.
