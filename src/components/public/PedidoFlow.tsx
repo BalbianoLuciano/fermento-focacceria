@@ -20,6 +20,10 @@ import {
   type CartItem,
 } from "@/lib/cart/cart-store";
 import { createOrder } from "@/lib/firebase/orders";
+import { subscribeIngredients } from "@/lib/firebase/ingredients";
+import { subscribeProducts } from "@/lib/firebase/products";
+import type { Ingredient, Product } from "@/lib/types";
+import { computeOrderCosts } from "@/lib/cost";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 const priceFormatter = new Intl.NumberFormat("es-AR");
@@ -162,6 +166,19 @@ export function PedidoFlow() {
 
   const [submitting, setSubmitting] = useState(false);
   const [sentForName, setSentForName] = useState<string | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+
+  useEffect(() => {
+    const unsubProducts = subscribeProducts((all) => setProducts(all));
+    const unsubIngredients = subscribeIngredients((all) =>
+      setIngredients(all),
+    );
+    return () => {
+      unsubProducts();
+      unsubIngredients();
+    };
+  }, []);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -195,20 +212,27 @@ export function PedidoFlow() {
 
     setSubmitting(true);
     try {
-      const orderItems = items.map((i) => ({
-        productId: i.productId,
-        productName: i.productName,
-        sizeName: i.sizeName,
-        unitPrice: i.unitPrice,
-        qty: i.qty,
-        subtotal: i.unitPrice * i.qty,
-      }));
+      // Snapshot per-line costs at current ingredient prices so future price
+      // changes never rewrite historical profit.
+      const { items: pricedItems, totalCost, profit } = computeOrderCosts(
+        items.map((i) => ({
+          productId: i.productId,
+          productName: i.productName,
+          sizeName: i.sizeName,
+          unitPrice: i.unitPrice,
+          qty: i.qty,
+        })),
+        products,
+        ingredients,
+      );
 
       await createOrder({
         customerName: values.customerName,
         customerPhone: values.customerPhone,
-        items: orderItems,
+        items: pricedItems,
         total,
+        totalCost,
+        profit,
         notes: values.notes?.length ? values.notes : undefined,
         status: "pending",
         paid: false,

@@ -28,8 +28,10 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 
 import { createOrder } from "@/lib/firebase/orders";
+import { subscribeIngredients } from "@/lib/firebase/ingredients";
 import { subscribeProducts } from "@/lib/firebase/products";
-import type { Product } from "@/lib/types";
+import type { Ingredient, Product } from "@/lib/types";
+import { computeOrderCosts } from "@/lib/cost";
 
 const priceFormatter = new Intl.NumberFormat("es-AR");
 const formatPrice = (v: number) => `$${priceFormatter.format(v)}`;
@@ -60,6 +62,7 @@ export function ManualOrderDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const [products, setProducts] = useState<Product[]>([]);
+  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
   const [submitting, setSubmitting] = useState(false);
 
   const form = useForm<FormValues>({
@@ -76,11 +79,17 @@ export function ManualOrderDialog({
 
   useEffect(() => {
     if (!open) return;
-    const unsubscribe = subscribeProducts(
+    const unsubProducts = subscribeProducts(
       (all) => setProducts(all),
       { activeOnly: true },
     );
-    return () => unsubscribe();
+    const unsubIngredients = subscribeIngredients((all) =>
+      setIngredients(all),
+    );
+    return () => {
+      unsubProducts();
+      unsubIngredients();
+    };
   }, [open]);
 
   useEffect(() => {
@@ -103,7 +112,7 @@ export function ManualOrderDialog({
   }, 0);
 
   const onSubmit = form.handleSubmit(async (values) => {
-    const orderItems = values.items
+    const resolved = values.items
       .map((line) => {
         const product = products.find((p) => p.id === line.productId);
         const size = product?.sizes.find((s) => s.name === line.sizeName);
@@ -114,24 +123,28 @@ export function ManualOrderDialog({
           sizeName: size.name,
           unitPrice: size.price,
           qty: line.qty,
-          subtotal: size.price * line.qty,
         };
       })
       .filter((x): x is NonNullable<typeof x> => x !== null);
 
-    if (orderItems.length === 0) {
+    if (resolved.length === 0) {
       toast.error("Completá los ítems");
       return;
     }
 
     setSubmitting(true);
     try {
+      const { items: pricedItems, total, totalCost, profit } =
+        computeOrderCosts(resolved, products, ingredients);
+
       await createOrder({
         customerName: values.customerName,
         customerPhone: values.customerPhone,
         notes: values.notes?.length ? values.notes : undefined,
-        items: orderItems,
-        total: orderItems.reduce((sum, i) => sum + i.subtotal, 0),
+        items: pricedItems,
+        total,
+        totalCost,
+        profit,
         status: "pending",
         paid: false,
         source: "manual",
