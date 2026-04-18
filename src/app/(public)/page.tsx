@@ -120,12 +120,12 @@ export default async function HomePage() {
         className="relative scroll-mt-20 overflow-hidden bg-secondary/40 py-16 md:py-24"
       >
         <Image
-          src="/arrow-right-focaccia.png"
+          src="/arrow-focaccia.png"
           alt=""
-          width={400}
-          height={400}
+          width={900}
+          height={1600}
           aria-hidden="true"
-          className="pointer-events-none absolute -left-16 top-32 hidden w-56 select-none opacity-90 lg:block xl:-left-8 xl:top-40 xl:w-72"
+          className="pointer-events-none absolute -left-12 top-24 hidden w-48 select-none opacity-95 lg:block xl:-left-4 xl:top-32 xl:w-64"
         />
 
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-5 md:px-8">
@@ -194,7 +194,7 @@ export default async function HomePage() {
 
       <section className="relative h-[40svh] min-h-[280px] overflow-hidden md:h-[60svh]">
         <Image
-          src="/mid-banner.jpg"
+          src="/banner-masa.jpg"
           alt="Masa con fermentación de 24 horas"
           fill
           sizes="100vw"
