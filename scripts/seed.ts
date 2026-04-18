@@ -135,6 +135,7 @@ interface ProductSeed {
     recipe: Array<{ ingredientId: string; quantity: number }>;
   }>;
   order: number;
+  defaultImageUrl?: string;
 }
 
 const PRODUCTS: ProductSeed[] = [
@@ -167,6 +168,7 @@ const PRODUCTS: ProductSeed[] = [
       { name: "XL", price: 10000, recipe: [] },
     ],
     order: 2,
+    defaultImageUrl: "/med-card.jpg",
   },
   {
     id: "product-garlic-lover",
@@ -187,6 +189,7 @@ const PRODUCTS: ProductSeed[] = [
       { name: "XL", price: 10000, recipe: [] },
     ],
     order: 3,
+    defaultImageUrl: "/garlic-card.jpg",
   },
   {
     id: "product-mixta",
@@ -209,6 +212,7 @@ const PRODUCTS: ProductSeed[] = [
       { name: "XL", price: 10000, recipe: [] },
     ],
     order: 4,
+    defaultImageUrl: "/mixta-card.jpg",
   },
 ];
 
@@ -305,10 +309,15 @@ async function seedProducts() {
       };
     });
 
+    // Preserve admin-uploaded imageUrl; otherwise fall back to the seed default
+    // (local /public asset). Empty string stays only if neither exists.
+    const existingImageUrl = (existing.data()?.imageUrl as string) || "";
+    const fallbackImageUrl = product.defaultImageUrl ?? "";
+
     const data = {
       name: product.name,
       description: product.description,
-      imageUrl: existing.exists ? existing.data()?.imageUrl ?? "" : "",
+      imageUrl: existingImageUrl || fallbackImageUrl,
       sizes: mergedSizes,
       active: existing.exists ? existing.data()?.active ?? true : true,
       order: product.order,

@@ -47,13 +47,13 @@ export function ProductCard({ product }: { product: Product }) {
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-[0_1px_0_rgba(44,24,16,0.04)] transition-shadow hover:shadow-md">
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-secondary">
+      <div className="relative aspect-[3/4] w-full overflow-hidden bg-secondary">
         {product.imageUrl ? (
           <Image
             src={product.imageUrl}
             alt={`${product.name} — focaccia artesanal recién horneada`}
             fill
-            sizes="(max-width: 768px) 100vw, 50vw"
+            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
@@ -61,7 +61,7 @@ export function ProductCard({ product }: { product: Product }) {
         )}
       </div>
 
-      <div className="flex flex-1 flex-col gap-4 p-5 md:p-6">
+      <div className="flex flex-1 flex-col gap-4 p-4 md:p-5">
         <div className="flex flex-col gap-1.5">
           <h3 className="font-display text-2xl leading-tight text-brown-900">
             {product.name}
