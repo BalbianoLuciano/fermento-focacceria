@@ -1,9 +1,11 @@
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
   getDoc,
   getDocs,
+  onSnapshot,
   orderBy,
   query,
   serverTimestamp,
@@ -11,6 +13,7 @@ import {
   updateDoc,
   where,
   type QueryConstraint,
+  type Unsubscribe,
 } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/client";
 import type { Product } from "@/lib/types";
@@ -77,4 +80,24 @@ export async function setProductActive(
     active,
     updatedAt: serverTimestamp(),
   });
+}
+
+export async function addProduct(data: ProductInput): Promise<string> {
+  const ref = await addDoc(productsCol(), {
+    ...data,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  });
+  return ref.id;
+}
+
+export function subscribeProducts(
+  callback: (products: Product[]) => void,
+  options: { activeOnly?: boolean } = {},
+): Unsubscribe {
+  const constraints: QueryConstraint[] = [orderBy("order", "asc")];
+  if (options.activeOnly) constraints.unshift(where("active", "==", true));
+  return onSnapshot(query(productsCol(), ...constraints), (snap) =>
+    callback(snap.docs.map((d) => mapProduct(d.id, d.data()))),
+  );
 }
