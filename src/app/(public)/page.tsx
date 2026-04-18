@@ -60,7 +60,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <section className="relative overflow-hidden">
+      <section className="relative h-[calc(100svh-4rem)] overflow-hidden">
         <div className="absolute inset-0 -z-10">
           <Image
             src="/hero-banner.jpg"
@@ -70,29 +70,29 @@ export default async function HomePage() {
             priority
             className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-background/85 via-background/65 to-secondary/70" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/85 via-background/65 to-secondary/75" />
         </div>
 
-        <div className="mx-auto flex min-h-[calc(100svh-4rem)] w-full max-w-4xl flex-col items-center justify-center gap-6 px-5 py-20 text-center md:px-8 md:py-28">
-          <span className="inline-flex items-center rounded-full border border-border bg-card/90 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-brown-500 backdrop-blur">
+        <div className="mx-auto flex h-full w-full max-w-4xl flex-col items-center justify-center gap-4 px-5 py-8 text-center md:gap-5 md:px-8">
+          <span className="inline-flex items-center rounded-full border border-border bg-card/90 px-4 py-1.5 text-[11px] font-medium uppercase tracking-wider text-brown-500 backdrop-blur">
             Masa madre · Fermentación 24 h
           </span>
 
-          <h1 className="font-display text-5xl leading-[1.02] text-brown-900 drop-shadow-[0_1px_0_rgba(255,255,255,0.4)] md:text-7xl lg:text-8xl xl:text-9xl">
+          <h1 className="font-display text-4xl leading-[1.05] text-brown-900 drop-shadow-[0_1px_0_rgba(255,255,255,0.4)] sm:text-5xl md:text-6xl lg:text-7xl">
             {heroMessage}
           </h1>
 
-          <p className="max-w-xl text-base text-brown-700 md:text-lg">
+          <p className="max-w-xl text-sm text-brown-700 md:text-base">
             Focaccias artesanales a pedido, en Corrientes. Pocas variedades,
             muchas horas de fermento, una sola persona detrás del horno.
           </p>
 
-          <div className="mt-4 flex flex-col items-stretch gap-3 sm:flex-row">
+          <div className="mt-2 flex flex-col items-stretch gap-2.5 sm:flex-row">
             <Link
               href="#menu"
               className={cn(
                 buttonVariants({ variant: "default" }),
-                "h-12 rounded-full px-8 text-base gap-2",
+                "h-11 rounded-full px-7 text-sm gap-2 md:h-12 md:text-base",
               )}
             >
               Ver el menú
@@ -102,14 +102,14 @@ export default async function HomePage() {
               href="/pedido"
               className={cn(
                 buttonVariants({ variant: "outline" }),
-                "h-12 rounded-full border-brown-300 bg-card/70 px-8 text-base text-brown-700 backdrop-blur hover:bg-muted",
+                "h-11 rounded-full border-brown-300 bg-card/70 px-7 text-sm text-brown-700 backdrop-blur hover:bg-muted md:h-12 md:text-base",
               )}
             >
               Armar pedido
             </Link>
           </div>
 
-          <p className="mt-8 max-w-md font-body text-sm italic text-brown-500">
+          <p className="mt-2 max-w-md font-body text-xs italic text-brown-500 md:text-sm">
             {tagline}
           </p>
         </div>
