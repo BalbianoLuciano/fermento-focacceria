@@ -156,7 +156,7 @@ export default async function HomePage() {
           >
             <div className="relative h-full overflow-hidden bg-secondary">
               <Image
-                src="/xl-card.jpg"
+                src="/xl-card-horizontal.jpg"
                 alt="Focaccia XL para compartir"
                 fill
                 sizes="(max-width: 640px) 130px, (max-width: 768px) 220px, 320px"
