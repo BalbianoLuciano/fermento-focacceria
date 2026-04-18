@@ -47,8 +47,11 @@ export function AdminShell({ children }: { children: ReactNode }) {
     router.replace("/login");
   };
 
-  // Always render the same outer structure on server and client so hydration
-  // has nothing to diff on wrappers. Inner content swaps based on auth.
+  // Render nothing on the server. The admin tree is fully client-gated by
+  // auth, and Next.js 16's segment rendering kept clashing with any DOM we
+  // produced during SSR. After mount the client renders the real shell.
+  if (!mounted) return null;
+
   return (
     <div className="flex min-h-svh bg-secondary/40">
       <aside className="sticky top-0 hidden h-svh w-64 shrink-0 border-r border-border bg-card md:block">
