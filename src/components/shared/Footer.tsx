@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { MessageCircle } from "lucide-react";
 import { Logo } from "@/components/shared/Logo";
 
@@ -30,10 +31,19 @@ export function Footer() {
   const instagramHref = `https://instagram.com/${INSTAGRAM_HANDLE}`;
 
   return (
-    <footer className="mt-20 border-t border-border/60 bg-secondary/60">
+    <footer className="border-t border-border/60 bg-secondary/60">
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-5 py-10 md:flex-row md:items-end md:justify-between md:px-8">
         <div className="flex flex-col gap-3">
-          <Logo size="md" />
+          <div className="flex flex-col items-start leading-none gap-1">
+            <Logo size="md" showTagline={false} />
+            <Link
+              href="/admin"
+              className="font-body text-xs italic font-light tracking-wide text-brown-500 no-underline hover:text-brown-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+              aria-label="Ingresar al panel"
+            >
+              Fresh from the oven
+            </Link>
+          </div>
           <p className="max-w-sm text-sm text-brown-500">
             Focaccias artesanales hechas a mano. Masa madre, fermentación de 24
             horas, pedido por WhatsApp.
