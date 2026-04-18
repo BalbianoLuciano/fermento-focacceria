@@ -42,12 +42,13 @@ export default function RootLayout({
   return (
     <html
       lang="es"
+      suppressHydrationWarning
       className={`${berkshireSwash.variable} ${outfit.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <AuthProvider>
           <TooltipProvider>{children}</TooltipProvider>
-          <Toaster position="top-center" richColors />
+          <Toaster position="top-center" richColors theme="light" />
         </AuthProvider>
       </body>
     </html>
