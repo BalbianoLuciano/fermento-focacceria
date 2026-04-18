@@ -190,38 +190,59 @@ export function ManualOrderDialog({
                 Agregar
               </button>
             </div>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col gap-3">
               {items.fields.map((field, index) => {
                 const selectedProductId = watchedItems[index]?.productId;
                 const selectedProduct = products.find(
                   (p) => p.id === selectedProductId,
                 );
+                const selectedSize = selectedProduct?.sizes.find(
+                  (s) => s.name === watchedItems[index]?.sizeName,
+                );
+                const qty = watchedItems[index]?.qty || 0;
+                const lineTotal =
+                  selectedSize && qty > 0 ? selectedSize.price * qty : 0;
                 return (
                   <div
                     key={field.id}
-                    className="grid grid-cols-[1fr_auto_64px_auto] items-end gap-2 rounded-2xl border border-border bg-background/60 p-2"
+                    className="flex flex-col gap-2 rounded-2xl border border-border bg-background/60 p-3"
                   >
-                    <div className="flex flex-col gap-1">
-                      <Select
-                        value={selectedProductId || ""}
-                        onValueChange={(v) => {
-                          form.setValue(`items.${index}.productId`, v as string);
-                          form.setValue(`items.${index}.sizeName`, "");
-                        }}
+                    <div className="flex items-start gap-2">
+                      <div className="min-w-0 flex-1">
+                        <Select
+                          value={selectedProductId || ""}
+                          onValueChange={(v) => {
+                            form.setValue(
+                              `items.${index}.productId`,
+                              v as string,
+                            );
+                            form.setValue(`items.${index}.sizeName`, "");
+                          }}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Producto" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {products.map((product) => (
+                              <SelectItem key={product.id} value={product.id}>
+                                {product.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => items.remove(index)}
+                        disabled={items.fields.length === 1}
+                        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-brown-500 hover:bg-muted disabled:opacity-40"
+                        aria-label="Quitar ítem"
                       >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Producto" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {products.map((product) => (
-                            <SelectItem key={product.id} value={product.id}>
-                              {product.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
                     </div>
-                    <div className="flex flex-col gap-1">
+
+                    <div className="grid grid-cols-[1fr_72px] items-start gap-2">
                       <Select
                         value={watchedItems[index]?.sizeName || ""}
                         onValueChange={(v) =>
@@ -229,7 +250,7 @@ export function ManualOrderDialog({
                         }
                         disabled={!selectedProduct}
                       >
-                        <SelectTrigger className="w-28">
+                        <SelectTrigger className="w-full">
                           <SelectValue placeholder="Tamaño" />
                         </SelectTrigger>
                         <SelectContent>
@@ -240,23 +261,24 @@ export function ManualOrderDialog({
                           ))}
                         </SelectContent>
                       </Select>
+                      <Input
+                        type="number"
+                        min={1}
+                        aria-label="Cantidad"
+                        {...form.register(`items.${index}.qty`, {
+                          valueAsNumber: true,
+                        })}
+                      />
                     </div>
-                    <Input
-                      type="number"
-                      min={1}
-                      {...form.register(`items.${index}.qty`, {
-                        valueAsNumber: true,
-                      })}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => items.remove(index)}
-                      disabled={items.fields.length === 1}
-                      className="flex h-9 w-9 items-center justify-center rounded-full text-brown-500 hover:bg-muted disabled:opacity-40"
-                      aria-label="Quitar ítem"
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
+
+                    {lineTotal > 0 && (
+                      <div className="flex items-center justify-between border-t border-border pt-2 text-xs text-brown-500">
+                        <span>Subtotal</span>
+                        <span className="font-medium text-brown-900">
+                          {formatPrice(lineTotal)}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 );
               })}
