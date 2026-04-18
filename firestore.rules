@@ -1,0 +1,38 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Only Anna can write. Replace the email with the real admin email before deploying.
+    // Firebase rules do not support env vars — this must be hardcoded.
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email == 'EMAIL_DE_ANNA@gmail.com';
+    }
+
+    // Public read for products, reviews, gallery and settings. Writes are admin-only.
+    match /products/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /reviews/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /gallery/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /settings/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Orders: anyone can create (public checkout from the web), but only admin
+    // can read, update or delete. Shape is validated on the client and can be
+    // reinforced with Cloud Functions if needed.
+    match /orders/{id} {
+      allow read: if isAdmin();
+      allow create: if true;
+      allow update, delete: if isAdmin();
+    }
+  }
+}
