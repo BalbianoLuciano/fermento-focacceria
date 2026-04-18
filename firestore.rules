@@ -29,6 +29,10 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
+    match /ingredients/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
 
     // Orders: anyone can create (public checkout from the web), but only admin
     // can read, update or delete. Shape is validated on the client and can be

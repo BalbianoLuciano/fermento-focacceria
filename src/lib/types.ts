@@ -10,9 +10,30 @@ export type OrderStatus =
 
 export type OrderSource = "web" | "manual";
 
+export type IngredientUnit = "g" | "ml" | "un";
+
+export interface RecipeIngredient {
+  ingredientId: string;
+  quantity: number;
+}
+
 export interface ProductSize {
   name: string;
   price: number;
+  recipe?: RecipeIngredient[];
+}
+
+export interface Ingredient {
+  id: string;
+  name: string;
+  unit: IngredientUnit;
+  pricePerUnit: number;
+  packageSize?: number;
+  packagePrice?: number;
+  active: boolean;
+  order: number;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
 }
 
 export interface Product {
@@ -34,6 +55,8 @@ export interface OrderItem {
   unitPrice: number;
   qty: number;
   subtotal: number;
+  unitCost?: number;
+  subtotalCost?: number;
 }
 
 export interface Order {
@@ -47,6 +70,8 @@ export interface Order {
   paid: boolean;
   paidAt?: Timestamp;
   source: OrderSource;
+  totalCost?: number;
+  profit?: number;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }
