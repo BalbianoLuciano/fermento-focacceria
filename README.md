@@ -24,7 +24,7 @@ Abrí `http://localhost:3000`.
 
 ## Variables de entorno
 
-Ver [`.env.example`](./.env.example). Las `NEXT_PUBLIC_FIREBASE_*` vienen del panel de Firebase. `NEXT_PUBLIC_ADMIN_EMAIL` es el email de Anna (único admin). `NEXT_PUBLIC_WHATSAPP_NUMBER` es el número en formato `wa.me` (solo dígitos, con código de país).
+Ver [`.env.example`](./.env.example). Las `NEXT_PUBLIC_FIREBASE_*` vienen del panel de Firebase. `NEXT_PUBLIC_ADMIN_EMAILS` es la lista separada por comas de emails autorizados a entrar al admin (mínimo el de Anna). `NEXT_PUBLIC_WHATSAPP_NUMBER` es el número en formato `wa.me` (solo dígitos, con código de país).
 
 En Vercel agregar las mismas variables en Settings → Environment Variables (Production + Preview).
 
@@ -53,7 +53,7 @@ npx firebase-tools login
 npx firebase-tools deploy --only firestore:rules,storage --project fermento-focacceria
 ```
 
-> Firebase no soporta env vars dentro de las reglas. El email de Anna (`kowalczukannaiel@gmail.com`) está hardcodeado en `firestore.rules` y `storage.rules`, espejado por `NEXT_PUBLIC_ADMIN_EMAIL` en el cliente.
+> Firebase no soporta env vars dentro de las reglas. La lista de admins está hardcodeada en `firestore.rules` y `storage.rules`, espejada por `NEXT_PUBLIC_ADMIN_EMAILS` en el cliente.
 
 ## Agentes
 

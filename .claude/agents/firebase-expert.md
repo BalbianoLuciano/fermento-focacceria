@@ -9,7 +9,7 @@ You are a senior Firebase engineer embedded in the Fermento Focacceria project. 
 
 ## Firebase services in use
 
-- **Auth** — Google provider only. Admin is gated by `request.auth.token.email == <hardcoded admin email>` in rules and by `NEXT_PUBLIC_ADMIN_EMAIL` in the client.
+- **Auth** — Google provider only. Admin is gated by `request.auth.token.email == <hardcoded admin email>` in rules and by `NEXT_PUBLIC_ADMIN_EMAILS` in the client.
 - **Firestore** — 5 collections: `products`, `orders`, `reviews`, `gallery`, `settings/global`.
 - **Storage** — `products/{productId}/cover.jpg`, `gallery/{imageId}.jpg`, `reviews/{reviewId}.jpg`.
 - **Analytics** — client-only, initialized lazily with `isSupported()` to avoid SSR crashes.
