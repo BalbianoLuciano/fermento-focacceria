@@ -16,7 +16,16 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Download, Receipt, TrendingUp, CircleDollarSign, PackageCheck } from "lucide-react";
+import {
+  CircleDollarSign,
+  Coins,
+  Download,
+  PackageCheck,
+  Percent,
+  Receipt,
+  TrendingUp,
+  Wallet,
+} from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -167,29 +176,42 @@ export function Analytics() {
   }, [orders, range]);
 
   const kpis = useMemo(() => {
-    const billed = inRange.filter((o) => o.paid).reduce((s, o) => s + o.total, 0);
+    const paid = inRange.filter((o) => o.paid);
+    const billed = paid.reduce((s, o) => s + o.total, 0);
+    const cost = paid.reduce((s, o) => s + (o.totalCost ?? 0), 0);
+    const profit = paid.reduce(
+      (s, o) => s + (o.profit ?? o.total - (o.totalCost ?? 0)),
+      0,
+    );
+    const margin = billed > 0 ? (profit / billed) * 100 : 0;
     const pending = inRange.filter((o) => !o.paid).reduce((s, o) => s + o.total, 0);
     const count = inRange.length;
     const avg = count === 0 ? 0 : inRange.reduce((s, o) => s + o.total, 0) / count;
-    const paidCount = inRange.filter((o) => o.paid).length;
+    const paidCount = paid.length;
     const paidPct = count === 0 ? 0 : Math.round((paidCount / count) * 100);
-    return { billed, pending, count, avg, paidPct };
+    const hasAnyCost = paid.some((o) => typeof o.totalCost === "number");
+    return { billed, cost, profit, margin, pending, count, avg, paidPct, hasAnyCost };
   }, [inRange]);
 
   const revenueByDay = useMemo(() => {
-    const map = new Map<string, number>();
+    const map = new Map<string, { total: number; profit: number }>();
     for (const order of inRange) {
       if (!order.paid) continue;
       const d = toDate(order.createdAt);
       if (!d) continue;
       const key = d.toISOString().slice(0, 10);
-      map.set(key, (map.get(key) ?? 0) + order.total);
+      const current = map.get(key) ?? { total: 0, profit: 0 };
+      current.total += order.total;
+      current.profit +=
+        order.profit ?? order.total - (order.totalCost ?? 0);
+      map.set(key, current);
     }
     return Array.from(map.entries())
       .sort(([a], [b]) => a.localeCompare(b))
-      .map(([date, total]) => ({
+      .map(([date, { total, profit }]) => ({
         date: date.slice(5),
         total,
+        profit,
       }));
   }, [inRange]);
 
@@ -244,14 +266,28 @@ export function Analytics() {
 
   const exportCsv = () => {
     const rows: string[][] = [
-      ["Fecha", "Cliente", "Teléfono", "Total", "Cobrado", "Estado", "Origen"],
+      [
+        "Fecha",
+        "Cliente",
+        "Teléfono",
+        "Total",
+        "Costo",
+        "Ganancia",
+        "Cobrado",
+        "Estado",
+        "Origen",
+      ],
       ...inRange.map((order) => {
         const d = toDate(order.createdAt);
+        const cost = order.totalCost ?? 0;
+        const profit = order.profit ?? order.total - cost;
         return [
           d ? d.toISOString() : "",
           order.customerName,
           order.customerPhone,
           order.total.toString(),
+          cost.toString(),
+          profit.toString(),
           order.paid ? "sí" : "no",
           order.status,
           order.source,
@@ -305,6 +341,31 @@ export function Analytics() {
           icon={Receipt}
         />
         <KpiCard
+          label="Costo de insumos"
+          value={formatPrice(kpis.cost)}
+          hint={
+            kpis.hasAnyCost
+              ? "precios al momento del pedido"
+              : "cargá recetas para ver esto"
+          }
+          icon={Coins}
+        />
+        <KpiCard
+          label="Ganancia"
+          value={formatPrice(kpis.profit)}
+          hint="facturado − costo"
+          icon={Wallet}
+        />
+        <KpiCard
+          label="Margen"
+          value={`${kpis.margin.toFixed(0)}%`}
+          hint={kpis.margin >= 60 ? "excelente" : kpis.margin >= 30 ? "OK" : "bajo"}
+          icon={Percent}
+        />
+      </div>
+
+      <div className="grid gap-3 md:grid-cols-3">
+        <KpiCard
           label="Pedidos"
           value={kpis.count.toString()}
           hint={`${kpis.paidPct}% cobrados`}
@@ -324,7 +385,7 @@ export function Analytics() {
 
       <div className="grid gap-4 md:grid-cols-2">
         <ChartCard
-          title="Facturación por día"
+          title="Facturación y ganancia por día"
           empty={revenueByDay.length === 0}
         >
           <ResponsiveContainer width="100%" height="100%">
@@ -338,12 +399,23 @@ export function Analytics() {
                 }
                 contentStyle={{ borderRadius: 12, border: `1px solid ${COLORS.brown300}` }}
               />
+              <Legend />
               <Line
                 type="monotone"
                 dataKey="total"
+                name="Facturado"
                 stroke={COLORS.gold}
                 strokeWidth={2.5}
                 dot={{ fill: COLORS.gold, r: 4 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="profit"
+                name="Ganancia"
+                stroke={COLORS.brown700}
+                strokeWidth={2}
+                strokeDasharray="4 4"
+                dot={{ fill: COLORS.brown700, r: 3 }}
               />
             </LineChart>
           </ResponsiveContainer>

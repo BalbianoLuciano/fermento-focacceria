@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ArrowRight, CircleDollarSign, Clock, Receipt } from "lucide-react";
+import {
+  ArrowRight,
+  CircleDollarSign,
+  Clock,
+  Receipt,
+  Wallet,
+} from "lucide-react";
 import { subscribeOrders } from "@/lib/firebase/orders";
 import type { Order, OrderStatus } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -101,13 +107,17 @@ export function Dashboard() {
     return d ? d >= todayStart : false;
   }).length;
 
-  const billedMonth = orders
-    .filter((o) => {
-      if (!o.paid || o.status === "cancelled") return false;
-      const d = toDate(o.createdAt);
-      return d ? d >= monthStart : false;
-    })
-    .reduce((sum, o) => sum + o.total, 0);
+  const paidMonth = orders.filter((o) => {
+    if (!o.paid || o.status === "cancelled") return false;
+    const d = toDate(o.createdAt);
+    return d ? d >= monthStart : false;
+  });
+
+  const billedMonth = paidMonth.reduce((sum, o) => sum + o.total, 0);
+  const profitMonth = paidMonth.reduce(
+    (sum, o) => sum + (o.profit ?? o.total - (o.totalCost ?? 0)),
+    0,
+  );
 
   const unpaidOpen = orders
     .filter((o) => !o.paid && o.status !== "cancelled")
@@ -126,7 +136,7 @@ export function Dashboard() {
         </p>
       </header>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-4">
         <KpiCard
           label="Pendientes hoy"
           value={pendingToday.toString()}
@@ -138,6 +148,12 @@ export function Dashboard() {
           value={formatPrice(billedMonth)}
           icon={Receipt}
           hint="cobrado · excluye cancelados"
+        />
+        <KpiCard
+          label="Ganancia del mes"
+          value={formatPrice(profitMonth)}
+          icon={Wallet}
+          hint="facturado − costo de insumos"
         />
         <KpiCard
           label="Pendiente de cobro"
