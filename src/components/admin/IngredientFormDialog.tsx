@@ -181,7 +181,7 @@ export function IngredientFormDialog({
                 }
               >
                 <SelectTrigger>
-                  <SelectValue />
+                  <span className="line-clamp-1">{UNIT_LABEL[unit]}</span>
                 </SelectTrigger>
                 <SelectContent>
                   {(Object.keys(UNIT_LABEL) as IngredientUnit[]).map((u) => (

@@ -233,7 +233,15 @@ export function ManualOrderDialog({
                           }}
                         >
                           <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Producto" />
+                            {selectedProduct ? (
+                              <span className="line-clamp-1">
+                                {selectedProduct.name}
+                              </span>
+                            ) : (
+                              <span className="text-muted-foreground">
+                                Producto
+                              </span>
+                            )}
                           </SelectTrigger>
                           <SelectContent>
                             {products.map((product) => (
@@ -264,7 +272,15 @@ export function ManualOrderDialog({
                         disabled={!selectedProduct}
                       >
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Tamaño" />
+                          {selectedSize ? (
+                            <span className="line-clamp-1">
+                              {selectedSize.name} · {formatPrice(selectedSize.price)}
+                            </span>
+                          ) : (
+                            <span className="text-muted-foreground">
+                              Tamaño
+                            </span>
+                          )}
                         </SelectTrigger>
                         <SelectContent>
                           {selectedProduct?.sizes.map((size) => (

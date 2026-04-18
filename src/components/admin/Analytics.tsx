@@ -311,7 +311,9 @@ export function Analytics() {
         <div className="flex items-center gap-2">
           <Select value={range} onValueChange={(v) => setRange(v as RangeKey)}>
             <SelectTrigger className="w-48">
-              <SelectValue />
+              <span className="line-clamp-1">
+                {RANGE_OPTIONS.find((o) => o.value === range)?.label ?? range}
+              </span>
             </SelectTrigger>
             <SelectContent>
               {RANGE_OPTIONS.map((opt) => (

@@ -153,4 +153,13 @@
   h4 {
     @apply font-display tracking-tight;
   }
+  /* Base-nova intentionally leaves the default arrow cursor on controls.
+     Override so every enabled button / role=button feels clickable. */
+  button:not(:disabled):not([aria-disabled="true"]),
+  [role="button"]:not(:disabled):not([aria-disabled="true"]),
+  [role="radio"]:not([aria-disabled="true"]),
+  [role="switch"]:not([aria-disabled="true"]),
+  [role="tab"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
 }

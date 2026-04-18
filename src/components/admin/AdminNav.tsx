@@ -60,7 +60,12 @@ export function AdminNav({
 
       <ul className="flex flex-col gap-1">
         {ITEMS.map(({ label, href, icon: Icon }) => {
-          const active = pathname === href || pathname?.startsWith(`${href}/`);
+          // Exact match for the dashboard so it doesn't stay lit on every
+          // nested admin route. Other entries match their own subtree.
+          const active =
+            href === "/admin"
+              ? pathname === "/admin"
+              : pathname === href || pathname?.startsWith(`${href}/`);
           const badge =
             href === "/admin/pedidos" && pendingCount > 0 ? pendingCount : null;
           return (

@@ -199,7 +199,10 @@ export function OrderDetailDialog({
                     disabled={busy}
                   >
                     <SelectTrigger>
-                      <SelectValue />
+                      <span className="line-clamp-1">
+                        {STATUS_OPTIONS.find((o) => o.value === order.status)
+                          ?.label ?? order.status}
+                      </span>
                     </SelectTrigger>
                     <SelectContent>
                       {STATUS_OPTIONS.map((opt) => (

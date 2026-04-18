@@ -167,7 +167,15 @@ function RecipeEditor({
                   }
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Ingrediente" />
+                    {selectedIng ? (
+                      <span className="line-clamp-1">
+                        {selectedIng.name} ({selectedIng.unit})
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground">
+                        Ingrediente
+                      </span>
+                    )}
                   </SelectTrigger>
                   <SelectContent>
                     {ingredients.map((ing) => (
