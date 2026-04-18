@@ -125,10 +125,10 @@ export default async function HomePage() {
           width={400}
           height={400}
           aria-hidden="true"
-          className="pointer-events-none absolute -right-12 top-32 hidden w-64 rotate-[8deg] select-none opacity-90 lg:block xl:-right-6 xl:top-40 xl:w-80"
+          className="pointer-events-none absolute -left-16 top-32 hidden w-56 select-none opacity-90 lg:block xl:-left-8 xl:top-40 xl:w-72"
         />
 
-        <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-5 md:px-8">
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-5 md:px-8">
           <header className="flex flex-col items-center gap-3 text-center">
             <span className="inline-flex items-center rounded-full border border-border bg-card/80 px-4 py-1.5 text-xs font-medium uppercase tracking-wider text-brown-500 backdrop-blur">
               Nuestros sabores
@@ -152,7 +152,7 @@ export default async function HomePage() {
               </p>
             </div>
           ) : (
-            <div className="flex flex-col gap-4">
+            <div className="grid w-full grid-cols-1 gap-4 md:grid-cols-2 md:gap-5">
               {products.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
