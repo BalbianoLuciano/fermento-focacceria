@@ -126,3 +126,24 @@ export async function markPaid(id: string, paid: boolean): Promise<void> {
 export async function deleteOrder(id: string): Promise<void> {
   await deleteDoc(orderDoc(id));
 }
+
+export type UpdateOrderInput = Partial<
+  Omit<Order, "id" | "createdAt" | "updatedAt">
+>;
+
+/**
+ * Full order edit (items, totals, customer, notes). Any key with `undefined`
+ * is dropped before the write so Firestore doesn't reject it.
+ */
+export async function updateOrder(
+  id: string,
+  data: UpdateOrderInput,
+): Promise<void> {
+  const cleaned = Object.fromEntries(
+    Object.entries(data).filter(([, value]) => value !== undefined),
+  );
+  await updateDoc(orderDoc(id), {
+    ...cleaned,
+    updatedAt: serverTimestamp(),
+  });
+}

@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { MessageCircle, Trash2 } from "lucide-react";
+import { MessageCircle, Pencil, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { OrderEditDialog } from "@/components/admin/OrderEditDialog";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -58,6 +59,7 @@ export function OrderDetailDialog({
 }) {
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [editing, setEditing] = useState(false);
 
   const handleStatus = async (value: string) => {
     if (!order) return;
@@ -229,15 +231,26 @@ export function OrderDetailDialog({
           </section>
 
           <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-between">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setConfirmDelete(true)}
-              className="rounded-full text-destructive hover:bg-destructive/10"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-              Eliminar
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setEditing(true)}
+                className="rounded-full"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+                Editar
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setConfirmDelete(true)}
+                className="rounded-full text-destructive hover:bg-destructive/10"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                Eliminar
+              </Button>
+            </div>
             <div className="flex gap-2">
               <Button
                 type="button"
@@ -259,6 +272,11 @@ export function OrderDetailDialog({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <OrderEditDialog
+        order={editing ? order : null}
+        onClose={() => setEditing(false)}
+      />
 
       <Dialog
         open={confirmDelete}
