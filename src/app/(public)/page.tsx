@@ -125,7 +125,7 @@ export default async function HomePage() {
               Nuestros sabores
             </span>
             <h2 className="font-display text-4xl text-brown-900 md:text-5xl">
-              Pocas, pero obsesivas
+              Lo justo y necesario
             </h2>
             <p className="max-w-lg text-base text-brown-500">
               Masa madre, fermentación lenta, horneada a pedido. Elegí tamaño y
