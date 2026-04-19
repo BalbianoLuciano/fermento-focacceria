@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import Autoplay from "embla-carousel-autoplay";
 import { Star } from "lucide-react";
@@ -46,6 +47,17 @@ export function ReviewsCarousel({ reviews }: { reviews: Review[] }) {
             <blockquote className="text-base leading-relaxed text-brown-700">
               &ldquo;{review.text}&rdquo;
             </blockquote>
+            {review.imageUrl && (
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-secondary">
+                <Image
+                  src={review.imageUrl}
+                  alt={`Reseña de ${review.authorName}`}
+                  fill
+                  sizes="(max-width: 768px) 85vw, 420px"
+                  className="object-cover"
+                />
+              </div>
+            )}
             <figcaption className="mt-auto text-sm font-medium text-brown-500">
               — {review.authorName}
             </figcaption>
