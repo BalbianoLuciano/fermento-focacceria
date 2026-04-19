@@ -49,25 +49,16 @@ export const metadata: Metadata = {
     title: "Fermento Focacceria — Recién horneadas, hechas con amor",
     description:
       "Focaccias artesanales con masa madre. Recién horneadas, hechas con amor.",
-    images: [
-      {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Fermento Focacceria — focaccia artesanal recién horneada",
-      },
-    ],
+    // images are auto-injected from src/app/opengraph-image.jpg
   },
   twitter: {
     card: "summary_large_image",
     title: "Fermento Focacceria",
     description:
       "Focaccias artesanales con masa madre. Recién horneadas, hechas con amor.",
-    images: ["/og-image.jpg"],
+    // images auto-injected from src/app/twitter-image.jpg
   },
-  icons: {
-    icon: "/favicon.ico",
-  },
+  // favicon / icon / apple-icon auto-registered from src/app/*.{ico,png}
 };
 
 export default function RootLayout({
