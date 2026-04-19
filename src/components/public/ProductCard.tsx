@@ -5,6 +5,12 @@ import { useState } from "react";
 import { Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { useCartStore } from "@/lib/cart/cart-store";
 import type { Product, ProductSize } from "@/lib/types";
@@ -31,6 +37,7 @@ function FallbackImage({ name }: { name: string }) {
 
 export function ProductCard({ product }: { product: Product }) {
   const [selected, setSelected] = useState<ProductSize>(product.sizes[0]);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const addItem = useCartStore((state) => state.addItem);
 
   const handleAdd = () => {
@@ -47,8 +54,13 @@ export function ProductCard({ product }: { product: Product }) {
 
   return (
     <article className="group grid grid-cols-[130px_1fr] items-stretch overflow-hidden rounded-3xl border border-border bg-card shadow-[0_1px_0_rgba(44,24,16,0.04)] transition-shadow hover:shadow-md sm:grid-cols-[180px_1fr] md:grid-cols-[240px_1fr]">
-      <div className="relative h-full overflow-hidden bg-secondary">
-        {product.imageUrl ? (
+      {product.imageUrl ? (
+        <button
+          type="button"
+          onClick={() => setLightboxOpen(true)}
+          aria-label={`Ver foto de ${product.name} en grande`}
+          className="relative h-full overflow-hidden bg-secondary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60"
+        >
           <Image
             src={product.imageUrl}
             alt={`${product.name} — focaccia artesanal recién horneada`}
@@ -56,10 +68,32 @@ export function ProductCard({ product }: { product: Product }) {
             sizes="(max-width: 640px) 130px, (max-width: 768px) 180px, 240px"
             className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
-        ) : (
+        </button>
+      ) : (
+        <div className="relative h-full overflow-hidden bg-secondary">
           <FallbackImage name={product.name} />
-        )}
-      </div>
+        </div>
+      )}
+
+      <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
+        <DialogContent className="max-w-4xl border-0 bg-transparent p-0 shadow-none">
+          <DialogHeader className="sr-only">
+            <DialogTitle>{product.name}</DialogTitle>
+          </DialogHeader>
+          {product.imageUrl && (
+            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-brown-900 md:aspect-[3/2]">
+              <Image
+                src={product.imageUrl}
+                alt={`${product.name} — focaccia artesanal recién horneada`}
+                fill
+                sizes="100vw"
+                className="object-contain"
+                priority
+              />
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <div className="flex flex-col gap-3 p-4 md:gap-4 md:p-5">
         <div className="flex flex-col gap-1">

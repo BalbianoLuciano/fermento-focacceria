@@ -153,7 +153,7 @@ export function OrdersList() {
       </header>
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)}>
-        <div className="-mx-5 overflow-x-auto px-5 md:mx-0 md:overflow-visible md:px-0">
+        <div className="w-full overflow-x-auto md:overflow-visible">
           <TabsList className="flex w-max gap-1 bg-transparent p-0 md:w-full md:flex-wrap">
             {TAB_ORDER.map((key) => (
               <TabsTrigger
