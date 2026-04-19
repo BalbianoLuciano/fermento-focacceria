@@ -37,11 +37,16 @@ export function ReviewsCarousel({ reviews }: { reviews: Review[] }) {
 
   return (
     <div className="overflow-hidden" ref={emblaRef}>
-      <div className="flex gap-4 md:gap-6">
+      <div className="flex items-start gap-4 md:gap-6">
         {reviews.map((review) => (
           <figure
             key={review.id}
-            className="flex min-w-[85%] shrink-0 flex-col gap-4 rounded-3xl border border-border bg-card p-6 shadow-sm md:min-w-[420px] md:p-7"
+            className={cn(
+              "flex shrink-0 flex-col gap-4 rounded-3xl border border-border bg-card p-6 shadow-sm md:p-7",
+              review.imageUrl
+                ? "min-w-[90%] md:min-w-[520px]"
+                : "min-w-[85%] md:min-w-[420px]",
+            )}
           >
             <Rating value={review.rating} />
             <blockquote className="text-base leading-relaxed text-brown-700">
