@@ -133,7 +133,7 @@ export function OrdersList() {
   }, [orders, tab, search]);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex min-w-0 max-w-full flex-col gap-6 overflow-x-hidden">
       <header className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="font-display text-3xl text-brown-900 md:text-4xl">
@@ -153,8 +153,8 @@ export function OrdersList() {
       </header>
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)}>
-        <div className="w-full overflow-x-auto md:overflow-visible">
-          <TabsList className="flex w-max gap-1 bg-transparent p-0 md:w-full md:flex-wrap">
+        <div className="w-full max-w-full overflow-x-auto">
+          <TabsList className="flex w-max gap-1 bg-transparent p-0">
             {TAB_ORDER.map((key) => (
               <TabsTrigger
                 key={key}
