@@ -119,52 +119,54 @@ export function ProductsList() {
           {products.map((product) => (
             <li
               key={product.id}
-              className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4"
+              className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 sm:flex-row sm:items-center sm:gap-4"
             >
-              <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-secondary">
-                {product.imageUrl ? (
-                  <Image
-                    src={product.imageUrl}
-                    alt=""
-                    fill
-                    sizes="64px"
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center font-display text-xl text-brown-500">
-                    {product.name.charAt(0)}
-                  </div>
-                )}
-              </div>
-
-              <div className="flex flex-1 flex-col gap-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="truncate font-medium text-brown-900">
-                    {product.name}
-                  </span>
-                  <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-brown-500">
-                    #{product.order}
-                  </span>
+              <div className="flex gap-3 sm:flex-1">
+                <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-xl bg-secondary sm:h-16 sm:w-16">
+                  {product.imageUrl ? (
+                    <Image
+                      src={product.imageUrl}
+                      alt=""
+                      fill
+                      sizes="64px"
+                      className="object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center font-display text-xl text-brown-500">
+                      {product.name.charAt(0)}
+                    </div>
+                  )}
                 </div>
-                <p className="truncate text-xs text-brown-500">
-                  {product.description}
-                </p>
-                <div className="flex flex-wrap gap-2 pt-1">
-                  {product.sizes.map((size) => (
-                    <span
-                      key={size.name}
-                      className="inline-flex items-center gap-1 rounded-full bg-background px-2 py-0.5 text-xs text-brown-700"
-                    >
-                      <span className="text-brown-500">{size.name}</span>
-                      <span className="font-medium">
-                        {formatPrice(size.price)}
-                      </span>
+
+                <div className="flex min-w-0 flex-1 flex-col gap-1">
+                  <div className="flex items-center gap-2">
+                    <span className="truncate font-medium text-brown-900">
+                      {product.name}
                     </span>
-                  ))}
+                    <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-brown-500">
+                      #{product.order}
+                    </span>
+                  </div>
+                  <p className="hidden truncate text-xs text-brown-500 sm:block">
+                    {product.description}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5 pt-0.5">
+                    {product.sizes.map((size) => (
+                      <span
+                        key={size.name}
+                        className="inline-flex items-center gap-1 rounded-full bg-background px-2 py-0.5 text-[11px] text-brown-700"
+                      >
+                        <span className="text-brown-500">{size.name}</span>
+                        <span className="font-medium">
+                          {formatPrice(size.price)}
+                        </span>
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              <div className="flex shrink-0 items-center gap-3">
+              <div className="flex items-center justify-end gap-2 border-t border-border pt-3 sm:border-t-0 sm:pt-0">
                 <Switch
                   checked={product.active}
                   onCheckedChange={(v) => toggleActive(product, v)}

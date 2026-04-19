@@ -153,27 +153,29 @@ export function OrdersList() {
       </header>
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)}>
-        <TabsList className="flex flex-wrap gap-1 bg-transparent p-0">
-          {TAB_ORDER.map((key) => (
-            <TabsTrigger
-              key={key}
-              value={key}
-              className="rounded-full border border-transparent px-4 data-[state=active]:border-brown-900 data-[state=active]:bg-brown-900 data-[state=active]:text-background"
-            >
-              {TAB_LABEL[key]}
-              {counts[key] > 0 && (
-                <span
-                  className={cn(
-                    "ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-background/20 px-1.5 text-[11px] font-medium",
-                    tab !== key && "bg-muted text-brown-700",
-                  )}
-                >
-                  {counts[key]}
-                </span>
-              )}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+        <div className="-mx-5 overflow-x-auto px-5 md:mx-0 md:overflow-visible md:px-0">
+          <TabsList className="flex w-max gap-1 bg-transparent p-0 md:w-full md:flex-wrap">
+            {TAB_ORDER.map((key) => (
+              <TabsTrigger
+                key={key}
+                value={key}
+                className="shrink-0 whitespace-nowrap rounded-full border border-transparent px-3.5 text-xs md:px-4 md:text-sm data-[state=active]:border-brown-900 data-[state=active]:bg-brown-900 data-[state=active]:text-background"
+              >
+                {TAB_LABEL[key]}
+                {counts[key] > 0 && (
+                  <span
+                    className={cn(
+                      "ml-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-background/20 px-1.5 text-[10px] font-medium",
+                      tab !== key && "bg-muted text-brown-700",
+                    )}
+                  >
+                    {counts[key]}
+                  </span>
+                )}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </div>
         <TabsContent value={tab} className="mt-4 flex flex-col gap-3">
           <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-brown-400" />
@@ -217,9 +219,9 @@ export function OrdersList() {
                     <button
                       type="button"
                       onClick={() => setDetailOrder(order)}
-                      className="flex w-full items-center gap-4 rounded-2xl border border-border bg-card p-4 text-left transition-colors hover:border-brown-300"
+                      className="grid w-full gap-2 rounded-2xl border border-border bg-card p-4 text-left transition-colors hover:border-brown-300 sm:grid-cols-[1fr_auto] sm:items-center sm:gap-4"
                     >
-                      <div className="flex flex-1 flex-col gap-1 min-w-0">
+                      <div className="flex min-w-0 flex-col gap-1">
                         <div className="flex items-center gap-2">
                           <span className="truncate font-medium text-brown-900">
                             {order.customerName}
@@ -239,14 +241,14 @@ export function OrdersList() {
                           </span>
                         </div>
                       </div>
-                      <div className="flex shrink-0 flex-col items-end gap-1">
-                        <span className="font-display text-lg text-brown-900">
+                      <div className="flex items-center justify-between gap-2 sm:flex-col sm:items-end">
+                        <span className="font-display text-lg text-brown-900 sm:order-1">
                           {formatPrice(order.total)}
                         </span>
-                        <div className="flex items-center gap-2">
+                        <div className="flex flex-wrap items-center justify-end gap-1.5 sm:order-2">
                           <span
                             className={cn(
-                              "rounded-full px-2 py-0.5 text-[11px] font-medium",
+                              "whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium",
                               STATUS_COLORS[order.status],
                             )}
                           >
@@ -254,13 +256,13 @@ export function OrdersList() {
                           </span>
                           <span
                             className={cn(
-                              "rounded-full px-2 py-0.5 text-[11px] font-medium",
+                              "whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium",
                               order.paid
                                 ? "bg-success/15 text-success"
                                 : "bg-muted text-brown-500",
                             )}
                           >
-                            {order.paid ? "Cobrado" : "Pend. cobro"}
+                            {order.paid ? "Cobrado" : "Pendiente"}
                           </span>
                         </div>
                       </div>
