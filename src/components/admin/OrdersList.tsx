@@ -4,12 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { Plus, Search } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { ManualOrderDialog } from "@/components/admin/ManualOrderDialog";
 import { OrderDetailDialog } from "@/components/admin/OrderDetailDialog";
@@ -89,8 +83,6 @@ export function OrdersList() {
     return () => unsubscribe();
   }, []);
 
-  // Keep the selected order card hydrated with the latest snapshot from the
-  // subscription (status/paid changes should reflect in the open dialog).
   useEffect(() => {
     if (!detailOrder || !orders) return;
     const fresh = orders.find((o) => o.id === detailOrder.id);
@@ -133,7 +125,7 @@ export function OrdersList() {
   }, [orders, tab, search]);
 
   return (
-    <div className="flex min-w-0 max-w-full flex-col gap-6 overflow-x-hidden">
+    <div className="grid gap-6">
       <header className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <h1 className="font-display text-3xl text-brown-900 md:text-4xl">
@@ -152,128 +144,135 @@ export function OrdersList() {
         </Button>
       </header>
 
-      <Tabs value={tab} onValueChange={(v) => setTab(v as TabKey)}>
-        <div className="w-full max-w-full overflow-x-auto">
-          <TabsList className="flex w-max gap-1 bg-transparent p-0">
-            {TAB_ORDER.map((key) => (
-              <TabsTrigger
-                key={key}
-                value={key}
-                className="shrink-0 whitespace-nowrap rounded-full border border-transparent px-3.5 text-xs md:px-4 md:text-sm data-[state=active]:border-brown-900 data-[state=active]:bg-brown-900 data-[state=active]:text-background"
-              >
-                {TAB_LABEL[key]}
-                {counts[key] > 0 && (
-                  <span
-                    className={cn(
-                      "ml-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-background/20 px-1.5 text-[10px] font-medium",
-                      tab !== key && "bg-muted text-brown-700",
-                    )}
-                  >
-                    {counts[key]}
-                  </span>
-                )}
-              </TabsTrigger>
-            ))}
-          </TabsList>
+      {/* Tab bar — plain scroll container, no Tabs component */}
+      <div className="overflow-x-auto scrollbar-none">
+        <div className="flex w-max gap-1">
+          {TAB_ORDER.map((key) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => setTab(key)}
+              className={cn(
+                "shrink-0 whitespace-nowrap rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors md:px-4 md:text-sm",
+                tab === key
+                  ? "border-brown-900 bg-brown-900 text-background"
+                  : "border-transparent text-brown-500 hover:text-brown-700",
+              )}
+            >
+              {TAB_LABEL[key]}
+              {counts[key] > 0 && (
+                <span
+                  className={cn(
+                    "ml-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-medium",
+                    tab === key ? "bg-background/20" : "bg-muted text-brown-700",
+                  )}
+                >
+                  {counts[key]}
+                </span>
+              )}
+            </button>
+          ))}
         </div>
-        <TabsContent value={tab} className="mt-4 flex flex-col gap-3">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-brown-400" />
-            <Input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar por nombre o teléfono"
-              className="pl-9"
-            />
-          </div>
+      </div>
 
-          {orders === null ? (
-            <div className="grid gap-2">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <div
-                  key={i}
-                  aria-hidden="true"
-                  className="h-20 animate-pulse rounded-2xl bg-card/70"
-                />
-              ))}
-            </div>
-          ) : visibleOrders.length === 0 ? (
-            <div className="flex min-h-[30vh] flex-col items-center justify-center gap-2 rounded-3xl border border-dashed border-border bg-card/60 px-8 py-16 text-center">
-              <p className="font-display text-2xl text-brown-700">
-                {tab === "pending"
-                  ? "Sin pendientes"
-                  : "No hay pedidos en esta vista"}
-              </p>
-              <p className="text-sm text-brown-500">
-                {tab === "pending"
-                  ? "¡Buen momento para un mate! ☕"
-                  : "Probá con otro filtro o cargá uno nuevo."}
-              </p>
-            </div>
-          ) : (
-            <ul className="flex flex-col gap-2">
-              {visibleOrders.map((order) => {
-                const date = toDate(order.createdAt);
-                return (
-                  <li key={order.id}>
-                    <button
-                      type="button"
-                      onClick={() => setDetailOrder(order)}
-                      className="grid w-full gap-2 rounded-2xl border border-border bg-card p-4 text-left transition-colors hover:border-brown-300 sm:grid-cols-[1fr_auto] sm:items-center sm:gap-4"
-                    >
-                      <div className="flex min-w-0 flex-col gap-1">
-                        <div className="flex items-center gap-2">
-                          <span className="truncate font-medium text-brown-900">
-                            {order.customerName}
-                          </span>
-                          {order.source === "manual" && (
-                            <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-brown-500">
-                              Manual
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2 text-xs text-brown-500">
-                          <span>{date ? formatDateShort(date) : "—"}</span>
-                          <span>·</span>
-                          <span className="truncate">
-                            {order.items.length}{" "}
-                            {order.items.length === 1 ? "ítem" : "ítems"}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex items-center justify-between gap-2 sm:flex-col sm:items-end">
-                        <span className="font-display text-lg text-brown-900 sm:order-1">
-                          {formatPrice(order.total)}
+      {/* Content */}
+      <div className="flex flex-col gap-3">
+        <div className="relative">
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-brown-400" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar por nombre o teléfono"
+            className="pl-9"
+          />
+        </div>
+
+        {orders === null ? (
+          <div className="grid gap-2">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div
+                key={i}
+                aria-hidden="true"
+                className="h-20 animate-pulse rounded-2xl bg-card/70"
+              />
+            ))}
+          </div>
+        ) : visibleOrders.length === 0 ? (
+          <div className="flex min-h-[30vh] flex-col items-center justify-center gap-2 rounded-3xl border border-dashed border-border bg-card/60 px-8 py-16 text-center">
+            <p className="font-display text-2xl text-brown-700">
+              {tab === "pending"
+                ? "Sin pendientes"
+                : "No hay pedidos en esta vista"}
+            </p>
+            <p className="text-sm text-brown-500">
+              {tab === "pending"
+                ? "¡Buen momento para un mate! ☕"
+                : "Probá con otro filtro o cargá uno nuevo."}
+            </p>
+          </div>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {visibleOrders.map((order) => {
+              const date = toDate(order.createdAt);
+              return (
+                <li key={order.id}>
+                  <button
+                    type="button"
+                    onClick={() => setDetailOrder(order)}
+                    className="grid w-full gap-2 rounded-2xl border border-border bg-card p-4 text-left transition-colors hover:border-brown-300 sm:grid-cols-[1fr_auto] sm:items-center sm:gap-4"
+                  >
+                    <div className="flex min-w-0 flex-col gap-1">
+                      <div className="flex items-center gap-2">
+                        <span className="truncate font-medium text-brown-900">
+                          {order.customerName}
                         </span>
-                        <div className="flex flex-wrap items-center justify-end gap-1.5 sm:order-2">
-                          <span
-                            className={cn(
-                              "whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium",
-                              STATUS_COLORS[order.status],
-                            )}
-                          >
-                            {STATUS_LABELS[order.status]}
+                        {order.source === "manual" && (
+                          <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-brown-500">
+                            Manual
                           </span>
-                          <span
-                            className={cn(
-                              "whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium",
-                              order.paid
-                                ? "bg-success/15 text-success"
-                                : "bg-muted text-brown-500",
-                            )}
-                          >
-                            {order.paid ? "Cobrado" : "Pendiente"}
-                          </span>
-                        </div>
+                        )}
                       </div>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </TabsContent>
-      </Tabs>
+                      <div className="flex items-center gap-2 text-xs text-brown-500">
+                        <span>{date ? formatDateShort(date) : "—"}</span>
+                        <span>·</span>
+                        <span className="truncate">
+                          {order.items.length}{" "}
+                          {order.items.length === 1 ? "ítem" : "ítems"}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between gap-2 sm:flex-col sm:items-end">
+                      <span className="font-display text-lg text-brown-900 sm:order-1">
+                        {formatPrice(order.total)}
+                      </span>
+                      <div className="flex flex-wrap items-center justify-end gap-1.5 sm:order-2">
+                        <span
+                          className={cn(
+                            "whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium",
+                            STATUS_COLORS[order.status],
+                          )}
+                        >
+                          {STATUS_LABELS[order.status]}
+                        </span>
+                        <span
+                          className={cn(
+                            "whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium",
+                            order.paid
+                              ? "bg-success/15 text-success"
+                              : "bg-muted text-brown-500",
+                          )}
+                        >
+                          {order.paid ? "Cobrado" : "Pendiente"}
+                        </span>
+                      </div>
+                    </div>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </div>
 
       <OrderDetailDialog
         order={detailOrder}
