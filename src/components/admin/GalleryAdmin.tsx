@@ -24,6 +24,7 @@ import {
 } from "@/lib/firebase/gallery";
 import { deleteImage, uploadImage } from "@/lib/firebase/storage";
 import type { GalleryImage } from "@/lib/types";
+import { MenuStoryExport } from "@/components/admin/MenuStoryExport";
 
 export function GalleryAdmin() {
   const [images, setImages] = useState<GalleryImage[] | null>(null);
@@ -126,7 +127,8 @@ export function GalleryAdmin() {
             Fotos que aparecen en la landing y en /galeria.
           </p>
         </div>
-        <div>
+        <div className="flex flex-wrap items-center gap-2">
+          <MenuStoryExport />
           <input
             ref={fileInputRef}
             type="file"
