@@ -146,17 +146,17 @@ export function MenuStoryExport() {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              gap: 16,
-              paddingTop: 64,
-              paddingBottom: 32,
+              gap: 12,
+              paddingTop: 40,
+              paddingBottom: 20,
             }}
           >
             {logoData && (
               <img
                 src={logoData}
                 alt=""
-                width={120}
-                height={120}
+                width={100}
+                height={100}
                 style={{ objectFit: "contain" }}
               />
             )}
@@ -167,8 +167,8 @@ export function MenuStoryExport() {
                 borderRadius: 9999,
                 border: `1px solid ${COLORS.brown100}`,
                 background: `${COLORS.white}cc`,
-                padding: "8px 20px",
-                fontSize: 14,
+                padding: "10px 28px",
+                fontSize: 20,
                 fontWeight: 500,
                 textTransform: "uppercase",
                 letterSpacing: "0.1em",
@@ -180,7 +180,7 @@ export function MenuStoryExport() {
             <span
               style={{
                 fontFamily: "var(--font-display), 'Berkshire Swash', cursive",
-                fontSize: 54,
+                fontSize: 72,
                 color: COLORS.brown900,
                 textAlign: "center",
                 lineHeight: 1.1,
@@ -190,10 +190,10 @@ export function MenuStoryExport() {
             </span>
             <span
               style={{
-                fontSize: 18,
+                fontSize: 26,
                 color: COLORS.brown500,
                 textAlign: "center",
-                maxWidth: 700,
+                maxWidth: 800,
                 lineHeight: 1.4,
               }}
             >
@@ -207,7 +207,7 @@ export function MenuStoryExport() {
               flex: 1,
               display: "flex",
               flexDirection: "column",
-              gap: 16,
+              gap: 12,
               padding: "0 40px",
             }}
           >
@@ -279,7 +279,7 @@ export function MenuStoryExport() {
                       style={{
                         fontFamily:
                           "var(--font-display), 'Berkshire Swash', cursive",
-                        fontSize: 42,
+                        fontSize: 52,
                         lineHeight: 1.1,
                         color: COLORS.brown900,
                       }}
@@ -288,7 +288,7 @@ export function MenuStoryExport() {
                     </span>
                     <span
                       style={{
-                        fontSize: 20,
+                        fontSize: 28,
                         color: COLORS.brown500,
                         lineHeight: 1.3,
                       }}
@@ -308,12 +308,12 @@ export function MenuStoryExport() {
                           alignItems: "flex-start",
                           borderRadius: 12,
                           border: `1px solid ${COLORS.brown100}`,
-                          padding: "8px 16px",
+                          padding: "10px 20px",
                         }}
                       >
                         <span
                           style={{
-                            fontSize: 14,
+                            fontSize: 20,
                             fontWeight: 500,
                             textTransform: "uppercase",
                             letterSpacing: "0.08em",
@@ -326,7 +326,7 @@ export function MenuStoryExport() {
                           style={{
                             fontFamily:
                               "var(--font-display), 'Berkshire Swash', cursive",
-                            fontSize: 26,
+                            fontSize: 34,
                             lineHeight: 1,
                             color: COLORS.brown900,
                           }}
@@ -353,7 +353,7 @@ export function MenuStoryExport() {
           >
             <span
               style={{
-                fontSize: 18,
+                fontSize: 24,
                 fontWeight: 500,
                 color: COLORS.brown700,
               }}
@@ -363,7 +363,7 @@ export function MenuStoryExport() {
             <span
               style={{
                 fontFamily: "var(--font-display), 'Berkshire Swash', cursive",
-                fontSize: 20,
+                fontSize: 26,
                 color: COLORS.gold,
               }}
             >
