@@ -21,19 +21,19 @@ export function buildWhatsAppMessage(order: WhatsAppOrderPayload): string {
   });
 
   const lines = [
-    "Hola Anna! 👋 Quiero hacer un pedido en Fermento Focacceria 🍞",
+    "Hola Anna! Quiero hacer un pedido en Fermento Focacceria",
     "",
-    "📝 Detalle:",
+    "Detalle:",
     ...itemLines,
     "",
-    `💰 Total: ${formatPrice(total)}`,
+    `Total: ${formatPrice(total)}`,
     "",
-    `👤 Nombre: ${customerName}`,
-    `📞 Tel: ${customerPhone}`,
+    `Nombre: ${customerName}`,
+    `Tel: ${customerPhone}`,
   ];
 
   if (notes?.trim()) {
-    lines.push(`📍 Notas: ${notes.trim()}`);
+    lines.push(`Notas: ${notes.trim()}`);
   }
 
   return lines.join("\n");
