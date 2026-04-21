@@ -21,17 +21,26 @@ export function onAuthChange(callback: (user: User | null) => void) {
   return onAuthStateChanged(getFirebaseAuth(), callback);
 }
 
+// Baseline admin list — mirrors the same hardcoded list in firestore.rules and
+// storage.rules (Firebase rules can't read env vars, so the source of truth
+// lives in both places). Keeps the client gate working even when Vercel is
+// missing the NEXT_PUBLIC_ADMIN_EMAILS env var.
+const CORE_ADMIN_EMAILS = [
+  "kowalczukannaiel@gmail.com",
+  "balbiano06@gmail.com",
+];
+
 function adminEmailsList(): string[] {
-  const raw = process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "";
-  return raw
+  const envEmails = (process.env.NEXT_PUBLIC_ADMIN_EMAILS ?? "")
     .split(",")
     .map((email) => email.trim().toLowerCase())
     .filter(Boolean);
+  return Array.from(
+    new Set([...CORE_ADMIN_EMAILS.map((e) => e.toLowerCase()), ...envEmails]),
+  );
 }
 
 export function isAdmin(user: User | null): boolean {
   if (!user?.email) return false;
-  const allowed = adminEmailsList();
-  if (allowed.length === 0) return false;
-  return allowed.includes(user.email.toLowerCase());
+  return adminEmailsList().includes(user.email.toLowerCase());
 }
