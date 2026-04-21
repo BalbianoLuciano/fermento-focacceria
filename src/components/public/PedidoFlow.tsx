@@ -212,8 +212,6 @@ export function PedidoFlow() {
 
     setSubmitting(true);
     try {
-      // Snapshot per-line costs at current ingredient prices so future price
-      // changes never rewrite historical profit.
       const { items: pricedItems, totalCost, profit } = computeOrderCosts(
         items.map((i) => ({
           productId: i.productId,
@@ -225,6 +223,24 @@ export function PedidoFlow() {
         products,
         ingredients,
       );
+
+      const url = buildWhatsAppUrl(
+        {
+          items,
+          total,
+          customerName: values.customerName,
+          customerPhone: values.customerPhone,
+          notes: values.notes,
+        },
+        whatsappNumber,
+      );
+
+      // Open WhatsApp synchronously within the user gesture so browsers
+      // don't flag it as a blocked popup (async gaps break the gesture chain).
+      const opened = window.open(url, "_blank", "noopener,noreferrer");
+      if (!opened) {
+        window.location.href = url;
+      }
 
       await createOrder({
         customerName: values.customerName,
@@ -239,20 +255,8 @@ export function PedidoFlow() {
         source: "web",
       });
 
-      const url = buildWhatsAppUrl(
-        {
-          items,
-          total,
-          customerName: values.customerName,
-          customerPhone: values.customerPhone,
-          notes: values.notes,
-        },
-        whatsappNumber,
-      );
-
       clear();
       setSentForName(values.customerName);
-      window.open(url, "_blank", "noopener,noreferrer");
     } catch (error) {
       console.error("[pedido] create failed", error);
       toast.error("No pudimos enviar tu pedido. Probá de nuevo en un rato.");
