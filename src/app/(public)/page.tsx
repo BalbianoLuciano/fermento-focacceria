@@ -131,6 +131,10 @@ export default async function HomePage() {
               Masa madre, fermentación lenta, horneada a pedido. Elegí tamaño y
               sumalas al pedido — la entrega la coordinamos por WhatsApp.
             </p>
+            <p className="max-w-lg rounded-2xl border border-border bg-card/80 px-4 py-3 text-sm text-brown-600">
+              <strong className="font-medium text-brown-800">Dias de entrega:</strong>{" "}
+              Miércoles y Viernes en Corrientes — Fines de semana en Corrientes y Resistencia.
+            </p>
           </header>
 
           {products.length === 0 ? (

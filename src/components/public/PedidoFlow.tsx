@@ -351,6 +351,11 @@ export function PedidoFlow() {
           )}
         </div>
 
+        <div className="rounded-2xl border border-border bg-secondary/60 px-4 py-3 text-xs text-brown-600">
+          <strong className="font-medium text-brown-800">Dias de entrega:</strong>{" "}
+          Miércoles y Viernes en Corrientes — Fines de semana en Corrientes y Resistencia.
+        </div>
+
         <Button
           type="submit"
           disabled={submitting}
