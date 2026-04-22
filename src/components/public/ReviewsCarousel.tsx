@@ -44,8 +44,8 @@ export function ReviewsCarousel({ reviews }: { reviews: Review[] }) {
             className={cn(
               "flex shrink-0 flex-col gap-4 rounded-3xl border border-border bg-card p-6 shadow-sm md:p-7",
               review.imageUrl
-                ? "min-w-[90%] md:min-w-[520px]"
-                : "min-w-[85%] md:min-w-[420px]",
+                ? "min-w-0 basis-full md:basis-auto md:min-w-[520px]"
+                : "min-w-0 basis-full md:basis-auto md:min-w-[420px]",
             )}
           >
             <Rating value={review.rating} />
