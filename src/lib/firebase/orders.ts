@@ -127,9 +127,14 @@ export async function deleteOrder(id: string): Promise<void> {
   await deleteDoc(orderDoc(id));
 }
 
-export type UpdateOrderInput = Partial<
-  Omit<Order, "id" | "createdAt" | "updatedAt">
->;
+export type UpdateOrderInput = Omit<
+  Partial<Omit<Order, "id" | "createdAt" | "updatedAt">>,
+  "deliveryDate" | "deliveryZone" | "notes"
+> & {
+  deliveryDate?: string | null;
+  deliveryZone?: Order["deliveryZone"] | null;
+  notes?: string | null;
+};
 
 /**
  * Full order edit (items, totals, customer, notes). Any key with `undefined`

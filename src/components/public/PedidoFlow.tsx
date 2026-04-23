@@ -9,10 +9,17 @@ import { ArrowLeft, Check, Minus, Plus, Send, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import {
+  isDeliveryDayAllowed,
+  ZONE_LABELS,
+  ZONE_OPTIONS,
+  type DeliveryZone,
+} from "@/lib/delivery";
 
 import {
   selectTotal,
@@ -39,6 +46,10 @@ const schema = z.object({
     .string()
     .trim()
     .regex(/^[\d\s+\-()]{7,20}$/, "Teléfono inválido (solo dígitos y espacios)"),
+  deliveryZone: z.enum(["corrientes", "resistencia"], {
+    message: "Elegí tu zona",
+  }),
+  deliveryDate: z.string().min(1, "Elegí una fecha de entrega"),
   notes: z.string().trim().max(500, "Muy largo").optional(),
 });
 type FormValues = z.infer<typeof schema>;
@@ -182,8 +193,16 @@ export function PedidoFlow() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { customerName: "", customerPhone: "", notes: "" },
+    defaultValues: {
+      customerName: "",
+      customerPhone: "",
+      deliveryZone: undefined,
+      deliveryDate: "",
+      notes: "",
+    },
   });
+
+  const watchedZone = form.watch("deliveryZone") as DeliveryZone | undefined;
 
   // Wait for localStorage hydration before deciding empty vs populated.
   if (!mounted) {
@@ -231,6 +250,8 @@ export function PedidoFlow() {
           customerName: values.customerName,
           customerPhone: values.customerPhone,
           notes: values.notes,
+          deliveryDate: values.deliveryDate,
+          deliveryZone: values.deliveryZone,
         },
         whatsappNumber,
       );
@@ -250,6 +271,8 @@ export function PedidoFlow() {
         totalCost,
         profit,
         notes: values.notes?.length ? values.notes : undefined,
+        deliveryDate: values.deliveryDate,
+        deliveryZone: values.deliveryZone,
         status: "pending",
         paid: false,
         source: "web",
@@ -351,9 +374,60 @@ export function PedidoFlow() {
           )}
         </div>
 
-        <div className="rounded-2xl border border-border bg-secondary/60 px-4 py-3 text-xs text-brown-600">
-          <strong className="font-medium text-brown-800">Dias de entrega:</strong>{" "}
-          Miércoles y Viernes en Corrientes — Fines de semana en Corrientes y Resistencia.
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-2">
+            <Label>Zona de entrega</Label>
+            <div className="grid grid-cols-2 gap-2">
+              {ZONE_OPTIONS.map((zone) => (
+                <button
+                  key={zone}
+                  type="button"
+                  onClick={() => {
+                    if (watchedZone === zone) {
+                      form.setValue("deliveryZone", undefined as unknown as "corrientes", { shouldValidate: true });
+                      form.setValue("deliveryDate", "");
+                    } else {
+                      form.setValue("deliveryZone", zone, { shouldValidate: true });
+                      form.setValue("deliveryDate", "");
+                    }
+                  }}
+                  className={cn(
+                    "rounded-full border px-4 py-2 text-sm font-medium transition-colors",
+                    watchedZone === zone
+                      ? "border-brown-900 bg-brown-900 text-background"
+                      : "border-border text-brown-600 hover:border-brown-400",
+                  )}
+                >
+                  {ZONE_LABELS[zone]}
+                </button>
+              ))}
+            </div>
+            {form.formState.errors.deliveryZone && (
+              <p className="text-xs text-destructive">
+                {form.formState.errors.deliveryZone.message}
+              </p>
+            )}
+          </div>
+
+          {watchedZone && (
+            <div className="flex flex-col gap-2">
+              <Label>Fecha de entrega</Label>
+              <div className="rounded-2xl border border-border bg-background/60 p-3">
+                <Calendar
+                  value={form.watch("deliveryDate")}
+                  onChange={(d) =>
+                    form.setValue("deliveryDate", d, { shouldValidate: true })
+                  }
+                  isDayDisabled={(d) => !isDeliveryDayAllowed(d, watchedZone)}
+                />
+              </div>
+              {form.formState.errors.deliveryDate && (
+                <p className="text-xs text-destructive">
+                  {form.formState.errors.deliveryDate.message}
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
         <Button
