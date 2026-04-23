@@ -8,6 +8,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
   DialogContent,
@@ -36,6 +37,12 @@ import type {
   Product,
 } from "@/lib/types";
 import { computeItemUnitCost, buildIngredientMap } from "@/lib/cost";
+import {
+  ZONE_LABELS,
+  ZONE_OPTIONS,
+  type DeliveryZone,
+} from "@/lib/delivery";
+import { cn } from "@/lib/utils";
 
 const priceFormatter = new Intl.NumberFormat("es-AR");
 const formatPrice = (v: number) => `$${priceFormatter.format(Math.round(v))}`;
@@ -43,6 +50,10 @@ const formatPrice = (v: number) => `$${priceFormatter.format(Math.round(v))}`;
 const schema = z.object({
   customerName: z.string().trim().min(2, "Requerido").max(80),
   customerPhone: z.string().trim().min(4, "Requerido").max(30),
+  deliveryZone: z
+    .enum(["corrientes", "resistencia"])
+    .optional(),
+  deliveryDate: z.string().optional(),
   notes: z.string().trim().max(500).optional(),
   items: z
     .array(
@@ -102,6 +113,8 @@ export function OrderEditDialog({
     form.reset({
       customerName: order.customerName,
       customerPhone: order.customerPhone,
+      deliveryZone: order.deliveryZone,
+      deliveryDate: order.deliveryDate ?? "",
       notes: order.notes ?? "",
       items: order.items.map((item) => ({
         key: itemKey(item),
@@ -112,6 +125,8 @@ export function OrderEditDialog({
       })),
     });
   }, [order, form]);
+
+  const watchedZone = form.watch("deliveryZone") as DeliveryZone | undefined;
 
   const watched = form.watch("items");
   const ingredientMap = useMemo(
@@ -176,6 +191,8 @@ export function OrderEditDialog({
         customerName: values.customerName,
         customerPhone: values.customerPhone,
         notes: values.notes?.length ? values.notes : undefined,
+        deliveryDate: values.deliveryDate || null,
+        deliveryZone: values.deliveryZone || null,
         items: resolvedItems,
         total: totals.total,
         totalCost: totals.totalCost,
@@ -222,6 +239,47 @@ export function OrderEditDialog({
                   {form.formState.errors.customerPhone.message}
                 </p>
               )}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Label>Zona de entrega</Label>
+            <div className="grid grid-cols-2 gap-2">
+              {ZONE_OPTIONS.map((zone) => (
+                <button
+                  key={zone}
+                  type="button"
+                  onClick={() => {
+                    if (watchedZone === zone) {
+                      form.setValue("deliveryZone", undefined, { shouldValidate: true });
+                      form.setValue("deliveryDate", "");
+                    } else {
+                      form.setValue("deliveryZone", zone, { shouldValidate: true });
+                      form.setValue("deliveryDate", "");
+                    }
+                  }}
+                  className={cn(
+                    "rounded-full border px-4 py-2 text-sm font-medium transition-colors",
+                    watchedZone === zone
+                      ? "border-brown-900 bg-brown-900 text-background"
+                      : "border-border text-brown-600 hover:border-brown-400",
+                  )}
+                >
+                  {ZONE_LABELS[zone]}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <Label>Fecha de entrega</Label>
+            <div className="rounded-2xl border border-border bg-background/60 p-3">
+              <Calendar
+                value={form.watch("deliveryDate") || undefined}
+                onChange={(d) =>
+                  form.setValue("deliveryDate", d, { shouldValidate: true })
+                }
+              />
             </div>
           </div>
 

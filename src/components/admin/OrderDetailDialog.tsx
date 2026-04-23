@@ -30,6 +30,7 @@ import {
 } from "@/lib/firebase/orders";
 import { buildWhatsAppUrl } from "@/lib/whatsapp";
 import type { Order, OrderStatus } from "@/lib/types";
+import { formatDeliveryDate, ZONE_LABELS } from "@/lib/delivery";
 
 const priceFormatter = new Intl.NumberFormat("es-AR");
 const formatPrice = (v: number) => `$${priceFormatter.format(v)}`;
@@ -181,6 +182,21 @@ export function OrderDetailDialog({
                 </div>
                 <div className="text-brown-900">{order.customerPhone}</div>
               </div>
+              {order.deliveryDate && (
+                <div>
+                  <div className="text-xs uppercase tracking-wider text-brown-500">
+                    Entrega
+                  </div>
+                  <div className="capitalize text-brown-900">
+                    {formatDeliveryDate(order.deliveryDate)}
+                    {order.deliveryZone && (
+                      <span className="ml-1 text-brown-500">
+                        · {ZONE_LABELS[order.deliveryZone]}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
               {order.notes && (
                 <div className="md:col-span-2">
                   <div className="text-xs uppercase tracking-wider text-brown-500">

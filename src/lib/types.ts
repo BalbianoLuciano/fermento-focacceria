@@ -59,6 +59,8 @@ export interface OrderItem {
   subtotalCost?: number;
 }
 
+export type DeliveryZone = "corrientes" | "resistencia";
+
 export interface Order {
   id: string;
   customerName: string;
@@ -72,6 +74,8 @@ export interface Order {
   source: OrderSource;
   totalCost?: number;
   profit?: number;
+  deliveryDate?: string;
+  deliveryZone?: DeliveryZone;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }

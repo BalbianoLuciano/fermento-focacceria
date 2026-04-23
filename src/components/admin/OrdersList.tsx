@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { Plus, Search } from "lucide-react";
+import { CalendarDays, Plus, Search } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import { OrderDetailDialog } from "@/components/admin/OrderDetailDialog";
 import { subscribeOrders } from "@/lib/firebase/orders";
 import type { Order, OrderStatus } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { formatDeliveryDate, formatDeliveryDateShort, ZONE_LABELS } from "@/lib/delivery";
 
 const priceFormatter = new Intl.NumberFormat("es-AR");
 const formatPrice = (v: number) => `$${priceFormatter.format(v)}`;
@@ -55,20 +56,78 @@ const TAB_LABEL: Record<TabKey, string> = {
   all: "Todos",
 };
 
-function toDate(ts: Order["createdAt"]): Date | null {
-  if (!ts) return null;
-  const maybe = ts as { toDate?: () => Date };
-  if (typeof maybe.toDate === "function") return maybe.toDate();
-  return null;
+function itemsSummary(order: Order): string {
+  return order.items
+    .map((item) => {
+      const label =
+        item.qty > 1
+          ? `${item.qty}x ${item.sizeName} ${item.productName}`
+          : `${item.sizeName} ${item.productName}`;
+      return label;
+    })
+    .join(", ");
 }
 
-function formatDateShort(date: Date): string {
-  return date.toLocaleString("es-AR", {
-    day: "2-digit",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+function todayISO(): string {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+interface DateGroup {
+  key: string;
+  label: string;
+  sublabel?: string;
+  orders: Order[];
+}
+
+function groupByDeliveryDate(orders: Order[]): DateGroup[] {
+  const map = new Map<string, Order[]>();
+  const noDate: Order[] = [];
+
+  for (const order of orders) {
+    if (order.deliveryDate) {
+      const existing = map.get(order.deliveryDate);
+      if (existing) {
+        existing.push(order);
+      } else {
+        map.set(order.deliveryDate, [order]);
+      }
+    } else {
+      noDate.push(order);
+    }
+  }
+
+  const today = todayISO();
+  const sortedKeys = [...map.keys()].sort();
+  const groups: DateGroup[] = [];
+
+  for (const key of sortedKeys) {
+    const groupOrders = map.get(key)!;
+    const isToday = key === today;
+    const zone = groupOrders[0]?.deliveryZone;
+    const allSameZone = groupOrders.every((o) => o.deliveryZone === zone);
+
+    groups.push({
+      key,
+      label: isToday ? `Hoy — ${formatDeliveryDate(key)}` : formatDeliveryDate(key),
+      sublabel:
+        allSameZone && zone ? ZONE_LABELS[zone] : undefined,
+      orders: groupOrders,
+    });
+  }
+
+  if (noDate.length > 0) {
+    groups.push({
+      key: "__no_date",
+      label: "Sin fecha de entrega",
+      orders: noDate,
+    });
+  }
+
+  return groups;
 }
 
 export function OrdersList() {
@@ -124,6 +183,11 @@ export function OrdersList() {
     });
   }, [orders, tab, search]);
 
+  const dateGroups = useMemo(
+    () => groupByDeliveryDate(visibleOrders),
+    [visibleOrders],
+  );
+
   return (
     <div className="grid gap-6">
       <header className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
@@ -144,7 +208,7 @@ export function OrdersList() {
         </Button>
       </header>
 
-      {/* Tab bar — plain scroll container, no Tabs component */}
+      {/* Tab bar */}
       <div className="overflow-x-auto scrollbar-none">
         <div className="flex w-max gap-1">
           {TAB_ORDER.map((key) => (
@@ -206,71 +270,93 @@ export function OrdersList() {
             </p>
             <p className="text-sm text-brown-500">
               {tab === "pending"
-                ? "¡Buen momento para un mate! ☕"
-                : "Probá con otro filtro o cargá uno nuevo."}
+                ? "Buen momento para un mate!"
+                : "Proba con otro filtro o carga uno nuevo."}
             </p>
           </div>
         ) : (
-          <ul className="flex flex-col gap-2">
-            {visibleOrders.map((order) => {
-              const date = toDate(order.createdAt);
-              return (
-                <li key={order.id}>
-                  <button
-                    type="button"
-                    onClick={() => setDetailOrder(order)}
-                    className="grid w-full gap-2 rounded-2xl border border-border bg-card p-4 text-left transition-colors hover:border-brown-300 sm:grid-cols-[1fr_auto] sm:items-center sm:gap-4"
-                  >
-                    <div className="flex min-w-0 flex-col gap-1">
-                      <div className="flex items-center gap-2">
-                        <span className="truncate font-medium text-brown-900">
-                          {order.customerName}
-                        </span>
-                        {order.source === "manual" && (
-                          <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-brown-500">
-                            Manual
+          <div className="flex flex-col gap-5">
+            {dateGroups.map((group) => (
+              <section key={group.key} className="flex flex-col gap-2">
+                <div className="flex items-center gap-2 px-1">
+                  <CalendarDays className="h-4 w-4 text-brown-400" />
+                  <h3 className="text-sm font-semibold capitalize text-brown-700">
+                    {group.label}
+                  </h3>
+                  {group.sublabel && (
+                    <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider text-brown-500">
+                      {group.sublabel}
+                    </span>
+                  )}
+                  <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-brown-500">
+                    {group.orders.length}
+                  </span>
+                </div>
+                <div className="overflow-hidden rounded-2xl border border-border bg-card">
+                  {group.orders.map((order, i) => (
+                    <button
+                      key={order.id}
+                      type="button"
+                      onClick={() => setDetailOrder(order)}
+                      className={cn(
+                        "flex w-full flex-col gap-1 px-4 py-3 text-left transition-colors hover:bg-muted/40",
+                        i > 0 && "border-t border-border",
+                      )}
+                    >
+                      <div className="grid w-full grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)_minmax(0,0.7fr)_auto] items-center gap-3">
+                        <div className="flex items-center gap-2 truncate">
+                          <span className="truncate font-medium text-brown-900">
+                            {order.customerName}
                           </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-brown-500">
-                        <span>{date ? formatDateShort(date) : "—"}</span>
-                        <span>·</span>
-                        <span className="truncate">
-                          {order.items.length}{" "}
-                          {order.items.length === 1 ? "ítem" : "ítems"}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between gap-2 sm:flex-col sm:items-end">
-                      <span className="font-display text-lg text-brown-900 sm:order-1">
-                        {formatPrice(order.total)}
-                      </span>
-                      <div className="flex flex-wrap items-center justify-end gap-1.5 sm:order-2">
-                        <span
-                          className={cn(
-                            "whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium",
-                            STATUS_COLORS[order.status],
+                          {order.source === "manual" && (
+                            <span className="shrink-0 rounded-full bg-muted px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wider text-brown-500">
+                              M
+                            </span>
                           )}
-                        >
-                          {STATUS_LABELS[order.status]}
+                        </div>
+                        <span className="truncate text-brown-600">
+                          {itemsSummary(order)}
                         </span>
-                        <span
-                          className={cn(
-                            "whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-medium",
-                            order.paid
-                              ? "bg-success/15 text-success"
-                              : "bg-muted text-brown-500",
-                          )}
-                        >
-                          {order.paid ? "Cobrado" : "Pendiente"}
+                        <span className="truncate capitalize text-brown-600">
+                          {order.deliveryDate
+                            ? formatDeliveryDateShort(order.deliveryDate)
+                            : "—"}
                         </span>
+                        <div className="flex items-center gap-2">
+                          <span className="whitespace-nowrap font-display text-brown-900">
+                            {formatPrice(order.total)}
+                          </span>
+                          <span
+                            className={cn(
+                              "whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-medium",
+                              STATUS_COLORS[order.status],
+                            )}
+                          >
+                            {STATUS_LABELS[order.status]}
+                          </span>
+                          <span
+                            className={cn(
+                              "hidden whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-medium sm:inline-flex",
+                              order.paid
+                                ? "bg-success/15 text-success"
+                                : "bg-muted text-brown-500",
+                            )}
+                          >
+                            {order.paid ? "Cobrado" : "Pend."}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
+                      {order.notes && (
+                        <p className="truncate text-xs italic text-brown-400">
+                          {order.notes}
+                        </p>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </section>
+            ))}
+          </div>
         )}
       </div>
 
