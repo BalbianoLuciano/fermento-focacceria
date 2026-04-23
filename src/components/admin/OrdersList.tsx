@@ -11,7 +11,7 @@ import { OrderDetailDialog } from "@/components/admin/OrderDetailDialog";
 import { subscribeOrders } from "@/lib/firebase/orders";
 import type { Order, OrderStatus } from "@/lib/types";
 import { cn } from "@/lib/utils";
-import { formatDeliveryDate, formatDeliveryDateShort, ZONE_LABELS } from "@/lib/delivery";
+import { formatDeliveryDate, ZONE_LABELS } from "@/lib/delivery";
 
 const priceFormatter = new Intl.NumberFormat("es-AR");
 const formatPrice = (v: number) => `$${priceFormatter.format(v)}`;
@@ -299,12 +299,12 @@ export function OrdersList() {
                       type="button"
                       onClick={() => setDetailOrder(order)}
                       className={cn(
-                        "flex w-full flex-col gap-1 px-4 py-3 text-left transition-colors hover:bg-muted/40",
+                        "flex w-full flex-col gap-1.5 px-4 py-3 text-left transition-colors hover:bg-muted/40",
                         i > 0 && "border-t border-border",
                       )}
                     >
-                      <div className="grid w-full grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)_minmax(0,0.7fr)_auto] items-center gap-3">
-                        <div className="flex items-center gap-2 truncate">
+                      <div className="flex w-full items-center justify-between gap-3">
+                        <div className="flex min-w-0 items-center gap-2">
                           <span className="truncate font-medium text-brown-900">
                             {order.customerName}
                           </span>
@@ -314,18 +314,15 @@ export function OrdersList() {
                             </span>
                           )}
                         </div>
-                        <span className="truncate text-brown-600">
+                        <span className="shrink-0 font-display text-brown-900">
+                          {formatPrice(order.total)}
+                        </span>
+                      </div>
+                      <div className="flex w-full items-center justify-between gap-3">
+                        <span className="min-w-0 truncate text-sm text-brown-600">
                           {itemsSummary(order)}
                         </span>
-                        <span className="truncate capitalize text-brown-600">
-                          {order.deliveryDate
-                            ? formatDeliveryDateShort(order.deliveryDate)
-                            : "—"}
-                        </span>
-                        <div className="flex items-center gap-2">
-                          <span className="whitespace-nowrap font-display text-brown-900">
-                            {formatPrice(order.total)}
-                          </span>
+                        <div className="flex shrink-0 items-center gap-1.5">
                           <span
                             className={cn(
                               "whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-medium",
@@ -336,18 +333,18 @@ export function OrdersList() {
                           </span>
                           <span
                             className={cn(
-                              "hidden whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-medium sm:inline-flex",
+                              "whitespace-nowrap rounded-full px-2 py-0.5 text-[10px] font-medium",
                               order.paid
                                 ? "bg-success/15 text-success"
                                 : "bg-muted text-brown-500",
                             )}
                           >
-                            {order.paid ? "Cobrado" : "Pend."}
+                            {order.paid ? "Cobrado" : "Pendiente"}
                           </span>
                         </div>
                       </div>
                       {order.notes && (
-                        <p className="truncate text-xs italic text-brown-400">
+                        <p className="text-xs italic text-brown-400">
                           {order.notes}
                         </p>
                       )}
