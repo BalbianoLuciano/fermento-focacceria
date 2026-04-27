@@ -105,4 +105,6 @@ export interface Settings {
   businessName: string;
   tagline: string;
   heroMessage: string;
+  serviceOpen?: boolean;
+  closedMessage?: string;
 }
