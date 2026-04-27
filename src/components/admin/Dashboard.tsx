@@ -9,6 +9,7 @@ import {
   Receipt,
   Wallet,
 } from "lucide-react";
+import { ServiceToggle } from "@/components/admin/ServiceToggle";
 import { subscribeOrders } from "@/lib/firebase/orders";
 import type { Order, OrderStatus } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -135,6 +136,8 @@ export function Dashboard() {
           Resumen rápido del horno.
         </p>
       </header>
+
+      <ServiceToggle />
 
       <div className="grid gap-4 md:grid-cols-4">
         <KpiCard
